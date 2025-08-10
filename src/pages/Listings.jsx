@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { listings as sampleListings } from "../data/listings";
 import ListingCard from "../components/ListingCard";
-
 export default function Listings() {
   const [roomType, setRoomType] = useState("");
   const [budget, setBudget] = useState("");
@@ -57,13 +56,13 @@ export default function Listings() {
           <option value="high-low">Price: High to Low</option>
         </select>
       </div>
-
+          {/* room type */}
       <div>
         <h4 className="font-semibold mb-2">Room Type</h4>
         {["Single", "Double", "Triple"].map((type) => (
           <label key={type} className="block cursor-pointer">
             <input
-              type="radio"
+              type="checkbox"
               name="roomType"
               value={type}
               checked={roomType === type}
@@ -74,7 +73,7 @@ export default function Listings() {
           </label>
         ))}
       </div>
-
+         {/* budget */}
       <div>
         <h4 className="font-semibold mb-2">Budget</h4>
         {[
@@ -84,7 +83,7 @@ export default function Listings() {
         ].map((b) => (
           <label key={b.value} className="block cursor-pointer">
             <input
-              type="radio"
+              type="checkbox"
               name="budget"
               value={b.value}
               checked={budget === b.value}
@@ -174,7 +173,7 @@ export default function Listings() {
       >
         {/* Background overlay */}
         <div
-          className="flex-1 bg-black bg-opacity-50"
+          className="flex-1 bg-opacity-50"
           onClick={() => setShowFilters(false)}
         ></div>
 
@@ -211,3 +210,7 @@ export default function Listings() {
     </div>
   );
 }
+
+
+
+

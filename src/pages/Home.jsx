@@ -7,10 +7,9 @@ export default function Home() {
     <div className="w-full">
       {/* Hero Section */}
       <section
-        className="relative h-[80vh] flex items-center justify-center text-center text-white"
+        className="relative h-[92vh] flex items-center justify-center text-center text-white"
         style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1500&q=80')",
+          backgroundImage: `url('https://images.pexels.com/photos/15488513/pexels-photo-15488513.jpeg')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
