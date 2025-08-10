@@ -1,6 +1,8 @@
-/**
- * Sample PG listing data — in a real app, this would come from an API.
- */
+
+
+
+
+
 export const listings = [
   {
     id: 1,
@@ -11,7 +13,7 @@ export const listings = [
     roomType: "Single",
     amenities: ["Wi-Fi", "Meals", "Laundry"],
     contact: "9876543210",
-  },
+    image: "https://images.jdmagicbox.com/v2/comp/hyderabad/m6/040pxx40.xx40.240926070743.w9m6/catalogue/sri-ven-coliving-spacepg-vip-hills-hyderabad-hostels-p5lsbsl2rr.jpg" },
   {
     id: 2,
     name: "Comfort Stay Girls PG",
@@ -21,7 +23,7 @@ export const listings = [
     roomType: "Double",
     amenities: ["Wi-Fi", "Meals"],
     contact: "9876543211",
-  },
+    image: "https://content.jdmagicbox.com/v2/comp/delhi/t2/011pxx11.xx11.170204173154.c7t2/catalogue/grand-new-girls-pg-laxmi-nagar-delhi-paying-guest-accommodations-hpcyw9yogz.jpg" },
   {
     id: 3,
     name: "Elite Student Hostel",
@@ -31,6 +33,7 @@ export const listings = [
     roomType: "Triple",
     amenities: ["Wi-Fi", "Laundry"],
     contact: "9876543212",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
   },
   {
     id: 4,
@@ -41,6 +44,7 @@ export const listings = [
     roomType: "Single",
     amenities: ["Wi-Fi", "Meals", "Laundry", "AC"],
     contact: "9876543213",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
   },
 
   {
@@ -52,6 +56,7 @@ export const listings = [
     roomType: "Double",
     amenities: ["Wi-Fi", "Meals", "Parking"],
     contact: "9876500011",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 6,
@@ -62,6 +67,7 @@ export const listings = [
     roomType: "Single",
     amenities: ["Wi-Fi", "Laundry", "Gym", "AC"],
     contact: "9876500022",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 7,
@@ -72,6 +78,7 @@ export const listings = [
     roomType: "Double",
     amenities: ["Wi-Fi", "Meals", "Common Kitchen"],
     contact: "9876500033",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 8,
@@ -82,6 +89,7 @@ export const listings = [
     roomType: "Single",
     amenities: ["Wi-Fi", "Meals", "Laundry", "Parking"],
     contact: "9876500044",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 9,
@@ -92,6 +100,7 @@ export const listings = [
     roomType: "Double",
     amenities: ["Wi-Fi", "Meals", "AC"],
     contact: "9876500055",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 10,
@@ -102,6 +111,7 @@ export const listings = [
     roomType: "Single",
     amenities: ["Wi-Fi", "Meals", "Laundry", "Gym", "AC"],
     contact: "9876500066",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 11,
@@ -112,6 +122,7 @@ export const listings = [
     roomType: "Double",
     amenities: ["Wi-Fi", "Meals", "Parking"],
     contact: "9876500077",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 12,
@@ -122,6 +133,7 @@ export const listings = [
     roomType: "Single",
     amenities: ["Wi-Fi", "Meals", "Laundry"],
     contact: "9876500088",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 13,
@@ -132,6 +144,7 @@ export const listings = [
     roomType: "Double",
     amenities: ["Wi-Fi", "Meals"],
     contact: "9876500099",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 14,
@@ -142,6 +155,7 @@ export const listings = [
     roomType: "Single",
     amenities: ["Wi-Fi", "Meals", "Laundry", "AC"],
     contact: "9876500100",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 15,
@@ -152,6 +166,7 @@ export const listings = [
     roomType: "Double",
     amenities: ["Wi-Fi", "Meals", "Parking"],
     contact: "9876500111",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 16,
@@ -162,6 +177,7 @@ export const listings = [
     roomType: "Single",
     amenities: ["Wi-Fi", "Meals", "Laundry", "Gym", "AC"],
     contact: "9876500122",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 17,
@@ -172,6 +188,7 @@ export const listings = [
     roomType: "Double",
     amenities: ["Wi-Fi", "Meals", "Common Kitchen", "Parking"],
     contact: "9876500133",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 {
     id: 18,
@@ -182,6 +199,7 @@ export const listings = [
     roomType: "Single",
     amenities: ["Wi-Fi", "Meals", "Laundry", "AC"],
     contact: "9876500144",
+    image: "https://gsh-cdn.sgp1.cdn.digitaloceanspaces.com/assets/img/no-broker-mumbai/PRT555/room-on-rent-in-mumbai/pg-in-santacruz-east_1722852861.jpg",
 },
 
 
