@@ -23,8 +23,8 @@ Built using **React**, **Tailwind CSS**, and designed for easy customization.
 ---
 
 ## 📸 Demo
-![App Screenshot](./readme_demo_img/screenshot2.png)
-![App Screenshot](./readme_demo_img/screenshot1.png)
+![App Screenshot](../readme_demo_img/screenshot2.png)
+![App Screenshot](../readme_demo_img/screenshot1.png)
 ---
 
 ## 🛠 Tech Stack
