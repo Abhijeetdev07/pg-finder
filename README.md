@@ -22,11 +22,6 @@ Built using **React**, **Tailwind CSS**, and designed for easy customization.
 
 ---
 
-## 📸 Demo
-![App Screenshot](../readme_assets/screenshot2.png)
-![App Screenshot](../readme_assets/screenshot1.png)
----
-
 ## 🛠 Tech Stack
 
 - **React** — UI framework
