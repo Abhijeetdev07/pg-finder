@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 *{
-     font-family: "outfit", serif;
+     font-family: "outfit", sans-serif;
 }
 
 ::-webkit-scrollbar{
