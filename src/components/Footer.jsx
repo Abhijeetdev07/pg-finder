@@ -4,7 +4,7 @@ import logo from "../assets/logo-PG.png";
 export default function Footer() {
   return (
     <footer className="bg-gray-300 text-black py-6 mt-8">
-      <div className="container mx-auto px-4 grid md:grid-cols-4 gap-1">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-4 gap-6">
 
         {/* Logo */}
 
@@ -45,7 +45,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="text-center mt-6 border-t border-blue-400 pt-4 text-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-6 border-t border-blue-400 pt-4 text-sm">
         © 2025 PG Finder. All Rights Reserved.
       </div>
     </footer>
