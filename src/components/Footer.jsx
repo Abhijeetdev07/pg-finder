@@ -1,4 +1,5 @@
 import React from "react";
+import logo from "../assets/logo-PG.png";
 
 export default function Footer() {
   return (
@@ -10,7 +11,7 @@ export default function Footer() {
          <div>
              <a href="/">
                 <div id="logo" className="w-[120px] h-[40px]">
-                  <img src="./src/assets/logo-PG.png" alt="PG Finder Logo" className="w-full h-full object-contain"/>
+                  <img src={logo} alt="PG Finder Logo" className="w-full h-full object-contain"/>
                 </div>
              </a>
              <p className="mt-3 ml-3"><span className="block">PG Finder</span>Your Stay, Just a Click Away.</p>

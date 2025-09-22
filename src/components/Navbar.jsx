@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
+import logo from "../assets/logo-PG.png";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +18,7 @@ export default function Navbar() {
         <NavLink to="/" className="flex items-center gap-3">
           <div id="logo" className="w-[120px] h-[40px]">
             <img
-              src="./src/assets/logo-PG.png"
+              src={logo}
               alt="PG Finder Logo"
               className="w-full h-full object-contain"
             />
