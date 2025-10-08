@@ -58,14 +58,15 @@ export async function createListing(req, res, next) {
 		const body = req.body || {};
 		const photos = (req.files || []).map((f) => ({ url: f.path, publicId: f.filename }));
 		// Parse JSON fields from multipart form-data
-		let location = undefined;
-		let facilities = undefined;
-		try {
-			location = body.location ? JSON.parse(body.location) : undefined;
-			facilities = body.facilities ? JSON.parse(body.facilities) : undefined;
-		} catch (_e) {
-			return res.status(400).json({ message: 'location and facilities must be valid JSON strings' });
-		}
+    let location = undefined;
+    let facilities = undefined;
+        try {
+            // location is optional; parse only if present
+            location = body.location ? JSON.parse(body.location) : undefined;
+            facilities = body.facilities ? JSON.parse(body.facilities) : undefined;
+        } catch (_e) {
+            return res.status(400).json({ message: 'facilities must be a valid JSON string' });
+        }
 		// Required fields
 		if (!body.name || !body.address) {
 			return res.status(400).json({ message: 'name and address are required' });
@@ -74,10 +75,7 @@ export async function createListing(req, res, next) {
 		if (!Number.isFinite(price) || price <= 0) {
 			return res.status(400).json({ message: 'pricePerMonth must be a positive number' });
 		}
-		if (!location || !Array.isArray(location.coordinates) || location.coordinates.length !== 2 ||
-			!location.coordinates.every((n) => typeof n === 'number' || !isNaN(Number(n)))) {
-			return res.status(400).json({ message: 'location.coordinates must be [lng, lat]' });
-		}
+        // location removed/optional: no validation required
 		// Coerce numeric optionals
 		const availableBeds = body.availableBeds !== undefined ? Number(body.availableBeds) : 0;
 		const totalBeds = body.totalBeds !== undefined ? Number(body.totalBeds) : 0;
@@ -87,7 +85,7 @@ export async function createListing(req, res, next) {
 			description: body.description,
 			address: body.address,
 			collegeName: body.collegeName,
-			location,
+            ...(location ? { location } : {}),
 			pricePerMonth: price,
 			gender: body.gender,
 			facilities,

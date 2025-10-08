@@ -27,10 +27,11 @@ const listingSchema = new mongoose.Schema(
 		description: { type: String, trim: true },
 		address: { type: String, required: true, trim: true },
 		collegeName: { type: String, trim: true, index: true },
-		location: {
-			type: { type: String, enum: ['Point'], default: 'Point' },
-			coordinates: { type: [Number], required: true, index: '2dsphere' }, // [lng, lat]
-		},
+    // location removed per request (keep optional field for backward compatibility)
+    location: {
+            type: { type: String, enum: ['Point'], default: 'Point' },
+            coordinates: { type: [Number], required: false, index: '2dsphere' }, // [lng, lat]
+        },
 		pricePerMonth: { type: Number, required: true, index: true },
 		gender: { type: String, enum: ['male', 'female', 'unisex'], default: 'unisex' },
 		facilities: { type: facilitiesSchema, default: () => ({}) },

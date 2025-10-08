@@ -15,7 +15,7 @@ const createSchema = Joi.object({
 });
 
 router.get('/listing/:listingId', getListingReviews);
-router.post('/', verifyAccessToken, requireRole('student'), validate(createSchema), createReview);
+router.post('/', verifyAccessToken, requireRole('student', 'owner'), validate(createSchema), createReview);
 router.delete('/:id', verifyAccessToken, requireRole('student', 'admin'), deleteReview);
 
 export default router;
