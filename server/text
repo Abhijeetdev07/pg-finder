@@ -1,0 +1,424 @@
+Goal
+Build a MERN app for students to find nearby PGs, filter/compare, view photos, favorite, contact/WhatsApp owners, book or request visits, and rate/review. Owners can list, edit, and manage inquiries/bookings. Includes JWT auth, Cloudinary uploads, Redux Toolkit, Tailwind, and MongoDB Atlas.
+1) Project Setup
+Install prerequisites: Node.js LTS, MongoDB Atlas account, Cloudinary account, Git.
+Create workspace structure:
+server/ (Express API)
+client/ (Vite + React + Tailwind)
+Initialize repos:
+git init at root; optionally set up a monorepo or two repos.
+2) Backend Setup (Node.js + Express)
+Init and install:
+cd server
+npm init -y
+npm i express mongoose jsonwebtoken bcryptjs cors dotenv cookie-parser multer cloudinary multer-storage-cloudinary joi
+Dev: npm i -D nodemon
+Scripts in server/package.json:
+"dev": "nodemon src/index.js"
+File structure:
+src/index.js
+src/config/db.js, src/config/cloudinary.js
+src/middlewares/auth.js, src/middlewares/validate.js, src/middlewares/error.js
+src/models/User.js, src/models/Listing.js, src/models/Booking.js, src/models/Inquiry.js, src/models/Review.js
+src/routes/auth.routes.js, src/routes/listings.routes.js, src/routes/bookings.routes.js, src/routes/inquiries.routes.js, src/routes/reviews.routes.js, src/routes/owners.routes.js
+src/controllers/*.js
+src/utils/whatsapp.js, src/utils/pagination.js
+Environment variables .env:
+PORT=5000
+MONGODB_URI=...
+JWT_ACCESS_SECRET=...
+JWT_REFRESH_SECRET=...
+CORS_ORIGIN=http://localhost:5173
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+Connect MongoDB:
+src/config/db.js to connect once at startup.
+CORS + cookies:
+Enable CORS with credentials and cookie-parser.
+Cloudinary config:
+Use cloudinary.v2 and multer-storage-cloudinary for multi-image uploads.
+3) Database Design (MongoDB)
+User (single collection with role)
+name, email (unique), passwordHash, phone, role in {student,owner}, favorites [ObjectId Listing], timestamps
+Listing
+ownerId (User), name, description, address, collegeName, location { type: "Point", coordinates: [lng, lat] } with 2dsphere index
+pricePerMonth, gender in {male,female,unisex}
+facilities { wifi: bool, food: bool, ac: bool, laundry: bool, attachedBathroom: bool, parking: bool, ... }
+photos: [ { url, publicId } ]
+availableBeds, totalBeds
+avgRating, numReviews, timestamps
+Index: collegeName, pricePerMonth, compound for text search on name/description/address
+Booking
+listingId, studentId, status in {pending,confirmed,cancelled,visited}
+startDate, durationMonths, visitRequested bool, timestamps
+Inquiry
+listingId, studentId, ownerId, message, contactVia in {form,whatsapp}, status in {open,responded}, timestamps
+Review
+listingId, studentId, rating 1–5, comment, timestamps
+Unique index on (listingId,studentId) to prevent duplicate reviews
+4) Core API Endpoints (Express)
+Auth (/api/auth)
+POST /register (student/owner role)
+POST /login
+POST /refresh
+POST /logout
+Me endpoints: GET /me, PATCH /me
+Listings (/api/listings)
+GET / query params: q, college, minPrice, maxPrice, wifi, food, ac, gender, page, limit, sort
+GET /nearby?lat=..&lng=..&radiusKm=..
+GET /:id
+Owner-protected:
+POST / (multipart, images to Cloudinary)
+PATCH /:id
+DELETE /:id
+Favorites (student):
+POST /:id/favorite toggle or add/remove
+GET /favorites (list of user’s favorites populated)
+Inquiries (/api/inquiries)
+POST / { listingId, message, contactVia }
+Owner: GET /owner list inquiries
+Owner: PATCH /:id update status
+Bookings (/api/bookings)
+Student: POST / { listingId, startDate, durationMonths, visitRequested }
+Student: GET /me
+Owner: GET /owner
+Owner: PATCH /:id update status
+Reviews (/api/reviews)
+POST / { listingId, rating, comment }
+GET /listing/:listingId
+DELETE /:id (author or admin)
+Owners (/api/owners)
+GET /dashboard/summary counts: listings, inquiries, bookings
+5) Backend Controllers/Logic
+Auth
+Hash password (bcrypt), issue access + refresh tokens.
+Store refresh token as httpOnly cookie; access token in memory header on client; or use httpOnly cookie for both if doing SSR. For SPA, use short-lived access token and refresh cookie.
+Listings
+Create/edit/delete with Cloudinary uploads (multer storage); update photos array with url and publicId.
+Filter pipeline with Mongo query; geospatial using $near with 2dsphere.
+Maintain avgRating and numReviews on listing after review changes.
+Favorites
+Add/remove listing ObjectId in User.favorites.
+Inquiries/Bookings
+Basic create + owner views; simple state machine for booking status.
+Reviews
+Enforce one review per student per listing; update listing aggregates.
+6) Validation, Security, and Middlewares
+Request schema validation with joi for each endpoint.
+Auth middleware
+verifyAccessToken to protect routes.
+requireRole('owner') for listing management and owner dashboards.
+Rate limiting (optional): express-rate-limit for auth and inquiry endpoints.
+Sanitization: helmet, strip HTML from user inputs or escape.
+CORS: allow frontend origin with credentials.
+Error handler: centralized error.js.
+7) Frontend Setup (React + Vite + Tailwind)
+Scaffold:
+cd client
+npm create vite@latest (React + JS/TS)
+npm i react-router-dom @reduxjs/toolkit react-redux axios formik yup react-hot-toast swiper react-icons
+Tailwind: npm i -D tailwindcss postcss autoprefixer && npx tailwindcss init -p
+Tailwind config
+Add ./index.html, ./src/**/*.{js,ts,jsx,tsx} to content.
+Folder structure:
+src/app/store.ts
+src/features/auth/*, src/features/listings/*, src/features/favorites/*, src/features/bookings/*, src/features/inquiries/*, src/features/reviews/*, src/features/filters/*
+src/components/* (cards, filters, gallery, pagination, rating, modals)
+src/pages/* (Home, Search, PGDetail, Favorites, Book, RequestVisit, Auth, OwnerDashboard, MyBookings, MyInquiries, OwnerListings, AddListing, EditListing)
+src/routes/* (protected routes)
+src/utils/api.ts, src/utils/jwt.ts
+src/styles/*
+Global UI
+Layout with Navbar (search bar by college/location), Footer.
+Toast system for feedback.
+8) Redux Toolkit State Design
+authSlice
+user, accessToken, status, thunks: register, login, logout, fetchMe, refresh
+listingsSlice
+items, pagination, filters, status, thunks: fetchListings, fetchNearby, fetchListingById, createListing (owner), updateListing, deleteListing
+favoritesSlice
+ids, thunks: toggleFavorite, fetchFavorites
+filtersSlice
+q, college, geo, priceRange, facilities, gender, sort
+bookingsSlice
+myBookings, ownerBookings, thunks: createBooking, fetchMyBookings, fetchOwnerBookings, updateBookingStatus
+inquiriesSlice
+myInquiries, ownerInquiries, thunks: createInquiry, fetchOwnerInquiries, updateInquiryStatus
+reviewsSlice
+listingReviews, thunks: createReview, fetchReviews, deleteReview
+Keep API module api.ts that injects auth headers and handles refresh on 401.
+9) Key UI Screens and Components
+Home
+Search by college/location, featured listings, quick filters.
+Search Results
+Filter drawer: price range slider, facilities checkboxes (Wi-Fi, food, AC, etc.), gender.
+Sort by price, rating, distance.
+Cards: image carousel, price, facilities chips, rating, favorite heart.
+PG Detail
+Carousel (Swiper), facilities list, map/approx distance, rating, reviews CRUD, owner contact, WhatsApp link, Book/Request Visit.
+Favorites
+Saved listings grid; remove favorite.
+Book/Request Visit
+Form with start date, duration, or visit date; submit booking or inquiry.
+Auth
+Register/login with role selection and validation.
+Owner Dashboard
+KPIs: total listings, inquiries, bookings.
+Tabs: My Listings, Add Listing, Bookings, Inquiries.
+Add/Edit Listing form with multi-image upload, facility toggles, location (lat/lng or college picker), price, beds.
+Common components
+FilterBar, FacilityChips, RatingStars, ImageUploader, ImageGallery, Pagination, ProtectedRoute, OwnerRoute.
+10) Location and Nearby Search
+Collect coordinates:
+From browser geolocation for students.
+For owners: store coordinates when adding listing; use Google Places/Mapbox geocoding for address → lat/lng.
+Mongo geospatial
+Ensure Listing.location has 2dsphere index and use $near with meters radius.
+Distance display
+Compute on server via $geoNear or on client using Haversine if coords provided.
+11) Image Uploads (Cloudinary)
+Owner listing form uses multer with Cloudinary storage.
+Server returns url and publicId array; store in Listing.photos.
+For edits, support deletion by publicId and upload new ones.
+12) Contact Owner
+Form inquiry creates Inquiry record.
+WhatsApp link format:
+https://wa.me/<phone>?text=${encodeURIComponent(message)}
+Show both options.
+13) Booking Flow
+Minimal MVP: booking creates a Booking with pending status; owner can confirm/cancel.
+Optional payment:
+Integrate Razorpay/Stripe later; add fields paymentStatus, amount, paymentId.
+Email/SMS (optional): send confirmation via transactional email (Resend/SendGrid).
+14) Authentication Strategy (JWT)
+On login/register:
+Issue short-lived access token (e.g., 15m) + refresh token (7–30d) as httpOnly cookie.
+Axios interceptor:
+Attach access token in Authorization header; on 401, call refresh, retry once.
+Protect routes on server and use owner role guards.
+15) Validation Rules (Examples)
+Listing create/update:
+Required fields: name, address, pricePerMonth, gender, facilities, location.
+Booking:
+startDate and durationMonths OR visitRequested true.
+Review:
+rating int 1–5, comment length limit.
+16) Performance and UX
+Pagination with server-side limit/skip.
+Query indexes: pricePerMonth, collegeName, text index for search, location 2dsphere.
+Image optimization: request Cloudinary transformations (width, quality, format).
+Skeleton loaders, optimistic favorite toggles.
+17) Testing
+Unit tests (optional): controllers and utils with Jest.
+Postman collection for API endpoints.
+Cypress/Playwright (optional) for key flows: search → detail → favorite → book.
+18) DevOps and Deployment
+Frontend: Vercel/Netlify.
+Backend: Render/Railway/Fly.io; set env vars; enable persistent cookies and CORS.
+Database: MongoDB Atlas cluster; network access + user.
+Cloudinary: prod credentials.
+Domain + HTTPS; force HTTPS on backend and set secure cookies in production.
+19) Milestone Plan
+Week 1:
+Backend auth, users, listings CRUD with Cloudinary. Basic filters.
+Week 2:
+Geospatial search, favorites, inquiries, bookings. Reviews with aggregates.
+Week 3:
+Frontend pages (Home, Search, Detail, Auth), Redux slices, filters UI.
+Week 4:
+Owner dashboard, add/edit listing, bookings/inquiries management, polish, deploy.
+20) What to Build First (Quick Start Commands)
+Backend:
+Build index.js server, connect DB, add auth and listings minimal routes.
+Implement POST /auth/register, POST /auth/login, POST /listings (owner), GET /listings.
+Frontend:
+Create Vite app, Tailwind, Redux store, axios client.
+Build Auth pages, Home search bar, Search results list with filters, PGDetail.
+Add favorite button and booking/inquiry forms.
+If you want, I can generate initial backend models and route scaffolds, and the React slices and page skeletons to speed up your start.
+
+
+
+
+
+
+
+
+
+
+4) Bookings
+1) Create booking (student)
+POST /api/bookings
+Headers: Authorization (student)
+Body (booking):
+OR (visit only):
+201:
+2) My bookings (student)
+GET /api/bookings/me
+Headers: Authorization (student)
+200:
+3) Owner bookings
+GET /api/bookings/owner
+Headers: Authorization (owner)
+200:
+4) Owner update booking status
+PATCH /api/bookings/:id
+Headers: Authorization (owner)
+Body:
+200:
+5) Reviews
+1) Create review (student)
+POST /api/reviews
+Headers: Authorization (student)
+Body:
+201:
+Note: Duplicate by same student → Mongo unique error (expect 409/500 depending on driver); use a different listing or delete first.
+2) Get listing reviews
+GET /api/reviews/listing/<listingId>
+200:
+3) Delete review (student/admin)
+DELETE /api/reviews/:id
+Headers: Authorization (student who created it or admin)
+200:
+6) Owner Dashboard
+GET /api/owners/dashboard/summary
+Headers: Authorization (owner)
+200:
+Notes
+If any protected call returns 401, first call POST /api/auth/refresh (cookie required) to get a new accessToken, update {{accessToken}}, and retry.
+For multipart requests in Postman, ensure you use form-data and attach multiple files under the key photos.
+
+
+
+
+
+
+
+
+
+
+7) Frontend Setup (React + Vite + Tailwind)
+Scaffold:
+cd client
+npm create vite@latest (React + JS/TS)
+npm i react-router-dom @reduxjs/toolkit react-redux axios formik yup react-hot-toast swiper react-icons
+Tailwind: npm i -D tailwindcss postcss autoprefixer && npx tailwindcss init -p
+Tailwind config
+Add ./index.html, ./src/**/*.{js,ts,jsx,tsx} to content.
+Folder structure:
+src/app/store.ts
+src/features/auth/*, src/features/listings/*, src/features/favorites/*, src/features/bookings/*, src/features/inquiries/*, src/features/reviews/*, src/features/filters/*
+src/components/* (cards, filters, gallery, pagination, rating, modals)
+src/pages/* (Home, Search, PGDetail, Favorites, Book, RequestVisit, Auth, OwnerDashboard, MyBookings, MyInquiries, OwnerListings, AddListing, EditListing)
+src/routes/* (protected routes)
+src/utils/api.ts, src/utils/jwt.ts
+src/styles/*
+Global UI
+Layout with Navbar (search bar by college/location), Footer.
+Toast system for feedback.
+8) Redux Toolkit State Design
+authSlice
+user, accessToken, status, thunks: register, login, logout, fetchMe, refresh
+listingsSlice
+items, pagination, filters, status, thunks: fetchListings, fetchNearby, fetchListingById, createListing (owner), updateListing, deleteListing
+favoritesSlice
+ids, thunks: toggleFavorite, fetchFavorites
+filtersSlice
+q, college, geo, priceRange, facilities, gender, sort
+bookingsSlice
+myBookings, ownerBookings, thunks: createBooking, fetchMyBookings, fetchOwnerBookings, updateBookingStatus
+inquiriesSlice
+myInquiries, ownerInquiries, thunks: createInquiry, fetchOwnerInquiries, updateInquiryStatus
+reviewsSlice
+listingReviews, thunks: createReview, fetchReviews, deleteReview
+Keep API module api.ts that injects auth headers and handles refresh on 401.
+9) Key UI Screens and Components
+Home
+Search by college/location, featured listings, quick filters.
+Search Results
+Filter drawer: price range slider, facilities checkboxes (Wi-Fi, food, AC, etc.), gender.
+Sort by price, rating, distance.
+Cards: image carousel, price, facilities chips, rating, favorite heart.
+PG Detail
+Carousel (Swiper), facilities list, map/approx distance, rating, reviews CRUD, owner contact, WhatsApp link, Book/Request Visit.
+Favorites
+Saved listings grid; remove favorite.
+Book/Request Visit
+Form with start date, duration, or visit date; submit booking or inquiry.
+Auth
+Register/login with role selection and validation.
+Owner Dashboard
+KPIs: total listings, inquiries, bookings.
+Tabs: My Listings, Add Listing, Bookings, Inquiries.
+Add/Edit Listing form with multi-image upload, facility toggles, location (lat/lng or college picker), price, beds.
+Common components
+FilterBar, FacilityChips, RatingStars, ImageUploader, ImageGallery, Pagination, ProtectedRoute, OwnerRoute.
+10) Location and Nearby Search
+Collect coordinates:
+From browser geolocation for students.
+For owners: store coordinates when adding listing; use Google Places/Mapbox geocoding for address → lat/lng.
+Mongo geospatial
+Ensure Listing.location has 2dsphere index and use $near with meters radius.
+Distance display
+Compute on server via $geoNear or on client using Haversine if coords provided.
+11) Image Uploads (Cloudinary)
+Owner listing form uses multer with Cloudinary storage.
+Server returns url and publicId array; store in Listing.photos.
+For edits, support deletion by publicId and upload new ones.
+12) Contact Owner
+Form inquiry creates Inquiry record.
+WhatsApp link format:
+https://wa.me/<phone>?text=${encodeURIComponent(message)}
+Show both options.
+13) Booking Flow
+Minimal MVP: booking creates a Booking with pending status; owner can confirm/cancel.
+Optional payment:
+Integrate Razorpay/Stripe later; add fields paymentStatus, amount, paymentId.
+Email/SMS (optional): send confirmation via transactional email (Resend/SendGrid).
+14) Authentication Strategy (JWT)
+On login/register:
+Issue short-lived access token (e.g., 15m) + refresh token (7–30d) as httpOnly cookie.
+Axios interceptor:
+Attach access token in Authorization header; on 401, call refresh, retry once.
+Protect routes on server and use owner role guards.
+15) Validation Rules (Examples)
+Listing create/update:
+Required fields: name, address, pricePerMonth, gender, facilities, location.
+Booking:
+startDate and durationMonths OR visitRequested true.
+Review:
+rating int 1–5, comment length limit.
+16) Performance and UX
+Pagination with server-side limit/skip.
+Query indexes: pricePerMonth, collegeName, text index for search, location 2dsphere.
+Image optimization: request Cloudinary transformations (width, quality, format).
+Skeleton loaders, optimistic favorite toggles.
+17) Testing
+Unit tests (optional): controllers and utils with Jest.
+Postman collection for API endpoints.
+Cypress/Playwright (optional) for key flows: search → detail → favorite → book.
+18) DevOps and Deployment
+Frontend: Vercel/Netlify.
+Backend: Render/Railway/Fly.io; set env vars; enable persistent cookies and CORS.
+Database: MongoDB Atlas cluster; network access + user.
+Cloudinary: prod credentials.
+Domain + HTTPS; force HTTPS on backend and set secure cookies in production.
+19) Milestone Plan
+Week 1:
+Backend auth, users, listings CRUD with Cloudinary. Basic filters.
+Week 2:
+Geospatial search, favorites, inquiries, bookings. Reviews with aggregates.
+Week 3:
+Frontend pages (Home, Search, Detail, Auth), Redux slices, filters UI.
+Week 4:
+Owner dashboard, add/edit listing, bookings/inquiries management, polish, deploy.
+20) What to Build First (Quick Start Commands)
+Backend:
+Build index.js server, connect DB, add auth and listings minimal routes.
+Implement POST /auth/register, POST /auth/login, POST /listings (owner), GET /listings.
+Frontend:
+Create Vite app, Tailwind, Redux store, axios client.
+Build Auth pages, Home search bar, Search results list with filters, PGDetail.
+Add favorite button and booking/inquiry forms.
+If you want, I can generate initial backend models and route scaffolds, and the React slices and page skeletons to speed up your start.
