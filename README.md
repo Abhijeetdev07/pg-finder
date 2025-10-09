@@ -18,6 +18,31 @@ A full-stack PG listing platform connecting students with PG owners.
 **Backend:** Node.js, Express, MongoDB, JWT Authentication  
 **Storage:** Cloudinary for images
 
+## 📁 Project Structure
+
+```
+project_5/
+├── client/                 # React frontend
+│   ├── src/
+│   │   ├── app/           # Redux store
+│   │   ├── components/    # UI components
+│   │   ├── features/      # Redux slices
+│   │   ├── pages/         # Page components
+│   │   ├── routes/        # Route protection
+│   │   └── utils/         # API client, JWT utils
+│   └── package.json
+├── server/                # Node.js backend
+│   ├── src/
+│   │   ├── config/        # DB & Cloudinary config
+│   │   ├── controllers/   # Route handlers
+│   │   ├── middlewares/   # Auth, validation, error
+│   │   ├── models/        # Mongoose schemas
+│   │   ├── routes/        # API routes
+│   │   └── utils/         # Utility functions
+│   └── package.json
+└── README.md
+```
+
 ## 🔧 Quick Start
 
 1. **Clone & Install**
