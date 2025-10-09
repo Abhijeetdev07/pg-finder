@@ -107,13 +107,6 @@ project_5/
 **Frontend:** Build with `npm run build` and deploy to Vercel/Netlify  
 **Backend:** Deploy to Railway/Heroku with MongoDB Atlas
 
-
----
-
-## 📝 License
-
-This project is licensed under the [MIT License].
-
 ---
 
 **Built with ❤️ using React & Node.js**
