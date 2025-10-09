@@ -102,11 +102,6 @@ project_5/
 - **Owner Dashboard**: Manage listings and bookings
 - **Auth**: Login/Register with role selection
 
-## 🚀 Deployment
-
-**Frontend:** Build with `npm run build` and deploy to Vercel/Netlify  
-**Backend:** Deploy to Railway/Heroku with MongoDB Atlas
-
 
 ---
 
