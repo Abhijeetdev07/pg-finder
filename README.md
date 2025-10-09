@@ -109,12 +109,4 @@ project_5/
 
 ---
 
-## 📝 License
-
-This project is licensed under the [MIT License](LICENSE).
-
-<details>
-<summary>MIT License</summary>
-
-
 **Built with ❤️ using React & Node.js**
