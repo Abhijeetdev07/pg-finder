@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { api } from '../utils/api.js'
+import { useSelector, useDispatch } from 'react-redux'
+import { createInquiry } from '../features/inquiries/inquiriesSlice'
 import toast from 'react-hot-toast'
 
 export default function RequestVisit() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const user = useSelector((s) => s.auth.user)
     const [message, setMessage] = useState('')
     const [submitting, setSubmitting] = useState(false)
@@ -14,13 +15,15 @@ export default function RequestVisit() {
     async function onSubmit(e) {
         e.preventDefault()
         if (!user) return navigate('/auth')
+        if (!message.trim()) return toast.error('Please enter a message')
+        
         try {
             setSubmitting(true)
-            await api.post('/api/inquiries', { listingId: id, message, contactVia: 'form' })
+            await dispatch(createInquiry({ listingId: id, message: message.trim(), contactVia: 'form' })).unwrap()
             toast.success('Visit request sent')
             navigate('/me/inquiries')
         } catch (err) {
-            toast.error(err?.response?.data?.message || 'Failed to send request')
+            toast.error(err?.message || 'Failed to send request')
         } finally {
             setSubmitting(false)
         }

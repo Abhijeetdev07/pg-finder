@@ -9,37 +9,66 @@ export default function AddListing() {
     const navigate = useNavigate()
     const [form, setForm] = useState({ name: '', description: '', address: '', collegeName: '', pricePerMonth: '', gender: 'unisex', availableBeds: '', totalBeds: '', facilities: {} })
     const [files, setFiles] = useState([])
+    const [clearKey, setClearKey] = useState(0)
     const [submitting, setSubmitting] = useState(false)
 
     function update(k, v) { setForm((f) => ({ ...f, [k]: v })) }
 
     async function onSubmit(e) {
         e.preventDefault()
-        // Basic client-side validation
-        if (!form.name || !form.address) return toast.error('Name and address are required')
-        if (!form.pricePerMonth || Number(form.pricePerMonth) <= 0) return toast.error('Enter a valid price')
-        // location is optional now
+        
+        // Enhanced client-side validation
+        const errors = []
+        
+        if (!form.name?.trim()) errors.push('Name is required')
+        if (!form.address?.trim()) errors.push('Address is required')
+        if (!form.pricePerMonth) errors.push('Price per month is required')
+        if (!form.gender) errors.push('Gender is required')
+        if (!form.facilities || Object.keys(form.facilities).length === 0) errors.push('At least one facility must be selected')
+        
+        if (form.name && form.name.length > 100) errors.push('Name must be 100 characters or less')
+        if (form.address && form.address.length > 200) errors.push('Address must be 200 characters or less')
+        
+        const price = Number(form.pricePerMonth)
+        if (form.pricePerMonth && (!Number.isFinite(price) || price <= 0)) {
+            errors.push('Price must be a positive number')
+        }
+        
+        if (errors.length > 0) {
+            errors.forEach(error => toast.error(error))
+            return
+        }
 
         const fd = new FormData()
-        fd.append('name', form.name)
-        fd.append('address', form.address)
-        if (form.description) fd.append('description', form.description)
-        fd.append('collegeName', form.collegeName)
-        fd.append('pricePerMonth', String(form.pricePerMonth || ''))
+        fd.append('name', form.name.trim())
+        fd.append('address', form.address.trim())
+        if (form.description) fd.append('description', form.description.trim())
+        if (form.collegeName) fd.append('collegeName', form.collegeName.trim())
+        fd.append('pricePerMonth', String(price))
         fd.append('gender', form.gender)
         fd.append('availableBeds', String(form.availableBeds || ''))
         fd.append('totalBeds', String(form.totalBeds || ''))
-        // do not send location
         fd.append('facilities', JSON.stringify(form.facilities || {}))
+        // Add location coordinates (required by server validation)
+        fd.append('location', JSON.stringify({ type: 'Point', coordinates: [0, 0] })) // Placeholder coordinates
         files.forEach((f) => fd.append('photos', f))
+        
         try {
             setSubmitting(true)
-            await api.post('/api/listings', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+            const { data } = await api.post('/api/listings', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
             toast.success('Listing created')
+            // Clear selection after successful upload
+            setFiles([])
+            setClearKey((k) => k + 1)
             navigate('/owner/listings')
         } catch (err) {
-            const msg = err?.response?.data?.message || 'Failed to create listing'
-            toast.error(msg)
+            const response = err?.response?.data
+            if (response?.errors && Array.isArray(response.errors)) {
+                response.errors.forEach(error => toast.error(error))
+            } else {
+                const msg = response?.message || 'Failed to create listing'
+                toast.error(msg)
+            }
         } finally {
             setSubmitting(false)
         }
@@ -67,7 +96,7 @@ export default function AddListing() {
                 </div>
                 {/* location removed */}
                 <FacilityChips value={form.facilities} onChange={(v) => update('facilities', v)} />
-                <ImageUploader onFiles={setFiles} />
+                <ImageUploader onFiles={setFiles} clearSignal={clearKey} />
                 <button disabled={submitting} type="submit" className="px-4 py-2 rounded bg-black text-white disabled:opacity-60">{submitting ? 'Creating...' : 'Create'}</button>
             </form>
         </section>

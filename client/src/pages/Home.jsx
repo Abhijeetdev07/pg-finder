@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { FiMenu, FiX } from 'react-icons/fi'
 import { useDispatch, useSelector } from 'react-redux'
 import Card from '../components/Card'
 import FiltersBar from '../components/FiltersBar'
@@ -45,7 +46,10 @@ export default function Home() {
                     onClick={() => { setDrawerVisible(true); setTimeout(() => setSidebarOpen(true), 0) }}
                     className="px-3 py-2 border rounded text-sm h-fit"
                 >
-                    ☰ Filters
+                    <span className="inline-flex items-center gap-2">
+                        <FiMenu />
+                        Filters
+                    </span>
                 </button>
                 {drawerVisible && (
                     <div className="fixed inset-0 z-[60]">
@@ -63,7 +67,7 @@ export default function Home() {
                                     onClick={() => { setSidebarOpen(false); setTimeout(() => setDrawerVisible(false), 300) }}
                                     className="px-2 py-1 text-sm"
                                 >
-                                    ✕
+                                    <FiX />
                                 </button>
                             </div>
                             <div className="p-3">
@@ -82,6 +86,9 @@ export default function Home() {
                                 subtitle={l.collegeName}
                                 image={l.photos?.[0]?.url}
                                 price={l.pricePerMonth}
+                                rating={l.avgRating}
+                                reviewsCount={l.numReviews}
+                                id={l._id}
                                 onClick={() => window.location.assign(`/pg/${l._id}`)}
                             />
                         ))}

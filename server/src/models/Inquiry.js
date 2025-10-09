@@ -6,7 +6,7 @@ const inquirySchema = new mongoose.Schema(
 		studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
 		ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
 		message: { type: String, required: true, trim: true },
-		contactVia: { type: String, enum: ['form', 'whatsapp'], default: 'form' },
+		contactVia: { type: String, enum: ['form'], default: 'form' },
 		status: { type: String, enum: ['open', 'responded'], default: 'open', index: true },
 	},
 	{ timestamps: true }

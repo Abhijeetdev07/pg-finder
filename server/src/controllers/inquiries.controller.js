@@ -13,9 +13,18 @@ export async function createInquiry(req, res, next) {
 	}
 }
 
+export async function getMyInquiries(req, res, next) {
+	try {
+		const items = await Inquiry.find({ studentId: req.user.id }).populate('listingId', 'name address photos pricePerMonth').sort({ createdAt: -1 });
+		return res.json({ items });
+	} catch (err) {
+		return next(err);
+	}
+}
+
 export async function getOwnerInquiries(req, res, next) {
 	try {
-		const items = await Inquiry.find({ ownerId: req.user.id }).sort({ createdAt: -1 });
+		const items = await Inquiry.find({ ownerId: req.user.id }).populate('studentId', 'name email').populate('listingId', 'name address').sort({ createdAt: -1 });
 		return res.json({ items });
 	} catch (err) {
 		return next(err);

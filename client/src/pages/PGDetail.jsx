@@ -7,7 +7,7 @@ import { fetchListingById } from '../features/listings/listingsSlice'
 import { api } from '../utils/api.js'
 import toast from 'react-hot-toast'
 import { FiX } from 'react-icons/fi'
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaStar, FaRegStar } from "react-icons/fa";
 
 export default function PGDetail() {
     const { id } = useParams()
@@ -17,6 +17,7 @@ export default function PGDetail() {
     const [selectedRating, setSelectedRating] = useState(0)
     const [submitting, setSubmitting] = useState(false)
     const [showReviewForm, setShowReviewForm] = useState(false)
+    const [showAllImages, setShowAllImages] = useState(false)
 
     useEffect(() => {
         if (id) dispatch(fetchListingById(id))
@@ -30,7 +31,8 @@ export default function PGDetail() {
         )
     }
 
-    const images = (listing.photos || []).map((p) => p.url)
+    const images = (listing.photos || []).map((p) => p.url).filter(Boolean)
+    const limitedImages = images.slice(0, 5)
 
     return (
         <section className="px-4 py-6">
@@ -48,7 +50,28 @@ export default function PGDetail() {
                 </div>
             </div>
 
-            <Gallery images={images} />
+            {showAllImages ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                    {images.map((src, idx) => (
+                        <div key={idx} className="overflow-hidden rounded">
+                            <img src={src} alt="" className="w-full h-40 object-cover" />
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <Gallery images={limitedImages} />
+            )}
+            {images.length > 5 && (
+                <div className="mt-2">
+                    <button
+                        type="button"
+                        onClick={() => setShowAllImages((v) => !v)}
+                        className="text-sm underline"
+                    >
+                        {showAllImages ? 'See less' : `See more (${images.length - 5} more)`}
+                    </button>
+                </div>
+            )}
 
             <div className="space-y-1">
                 <p className="text-gray-600">{listing.address}</p>
@@ -97,12 +120,12 @@ export default function PGDetail() {
                             let didSucceed = false
                             try {
                                 const response = await api.post('/api/reviews', { listingId: id, rating: selectedRating, comment })
-                                if (response?.status === 201 || response?.data?.review) {
+                                const ok = typeof response?.status === 'number' && response.status >= 200 && response.status < 300
+                                if (ok || response?.data?.review) {
                                     didSucceed = true
                                     toast.success('Review submitted successfully', { id: 'review-submit' })
                                     e.currentTarget.reset()
                                     setSelectedRating(0)
-                                    setShowReviewForm(false) // Hide the form after successful submission
                                     // Refresh listing to show updated rating
                                     dispatch(fetchListingById(id))
                                 }
@@ -121,6 +144,10 @@ export default function PGDetail() {
                                 }
                             } finally {
                                 setSubmitting(false)
+                                if (didSucceed) {
+                                    // Hide the form after successful submission (handles any 2xx)
+                                    setShowReviewForm(false)
+                                }
                             }
                         }}>
                             <div className="mb-2">
@@ -131,9 +158,14 @@ export default function PGDetail() {
                                             key={star}
                                             type="button"
                                             onClick={() => setSelectedRating(star)}
-                                            className={`text-2xl transition-colors ${star <= selectedRating ? 'text-yellow-500' : 'text-gray-300'}`}
+                                            className="transition-transform hover:scale-110"
+                                            aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
                                         >
-                                            ★
+                                            {star <= selectedRating ? (
+                                                <FaStar className="text-yellow-500" size={22} />
+                                            ) : (
+                                                <FaRegStar className="text-gray-300" size={22} />
+                                            )}
                                         </button>
                                     ))}
                                 </div>
@@ -169,9 +201,6 @@ export default function PGDetail() {
             <div>
                 <h3 className="font-semibold mb-2">Contact</h3>
                 <div className="flex items-center gap-2">
-                    {listing.ownerPhone && (
-                        <a className="px-3 py-2 rounded border text-sm" href={`https://wa.me/${listing.ownerPhone}`}>WhatsApp</a>
-                    )}
                 </div>
             </div>
             </div>

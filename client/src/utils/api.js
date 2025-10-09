@@ -1,5 +1,6 @@
 import axios from 'axios';
 // Note: import action creators lazily where used to avoid circular deps
+// Force refresh to resolve HMR caching issues
 
 let getAuthState = null;
 export function setAuthGetter(fn) {
@@ -52,15 +53,21 @@ api.interceptors.response.use(
 						resolve(api(original));
 					});
 				});
-            } catch (_e) {
+            } catch (refreshError) {
 				isRefreshing = false;
+                // Clear auth state and redirect to login on refresh failure
                 const { store } = await import('../app/store.js');
                 const { logout } = await import('../features/auth/authSlice.js');
                 store.dispatch(logout());
+                
+                // Only redirect if not already on auth page
+                if (!window.location.pathname.includes('/auth')) {
+                    window.location.href = '/auth';
+                }
+                
 				return Promise.reject(error);
 			}
 		}
         return Promise.reject(error);
 	}
 );
-export default api;

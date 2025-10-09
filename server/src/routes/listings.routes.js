@@ -18,7 +18,10 @@ const storage = new CloudinaryStorage({
 		transformation: [{ quality: 'auto:good', fetch_format: 'auto' }],
 	},
 });
-const upload = multer({ storage });
+const upload = multer({
+    storage,
+    limits: { fileSize: 2 * 1024 * 1024 }, // 2MB per file
+});
 
 const listSchema = Joi.object({
 	query: Joi.object({

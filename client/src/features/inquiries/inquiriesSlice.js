@@ -10,6 +10,15 @@ export const createInquiry = createAsyncThunk('inquiries/create', async (payload
     }
 });
 
+export const fetchMyInquiries = createAsyncThunk('inquiries/fetchMy', async (_, { rejectWithValue }) => {
+    try {
+        const { data } = await api.get('/api/inquiries/me');
+        return data; // { items }
+    } catch (err) {
+        return rejectWithValue(err?.response?.data || { message: 'Failed to fetch my inquiries' });
+    }
+});
+
 export const fetchOwnerInquiries = createAsyncThunk('inquiries/fetchOwner', async (_, { rejectWithValue }) => {
     try {
         const { data } = await api.get('/api/inquiries/owner');
@@ -43,6 +52,18 @@ const inquiriesSlice = createSlice({
 		builder
             .addCase(createInquiry.fulfilled, (state, action) => {
                 if (action.payload.inquiry) state.myInquiries.unshift(action.payload.inquiry);
+            })
+            .addCase(fetchMyInquiries.pending, (state) => {
+				state.status = 'loading';
+				state.error = null;
+			})
+			.addCase(fetchMyInquiries.fulfilled, (state, action) => {
+				state.status = 'succeeded';
+                state.myInquiries = action.payload.items;
+			})
+			.addCase(fetchMyInquiries.rejected, (state, action) => {
+				state.status = 'failed';
+				state.error = action.payload || action.error;
             })
             .addCase(fetchOwnerInquiries.pending, (state) => {
 				state.status = 'loading';

@@ -57,36 +57,102 @@ export async function createListing(req, res, next) {
 	try {
 		const body = req.body || {};
 		const photos = (req.files || []).map((f) => ({ url: f.path, publicId: f.filename }));
+		
 		// Parse JSON fields from multipart form-data
-    let location = undefined;
-    let facilities = undefined;
-        try {
-            // location is optional; parse only if present
-            location = body.location ? JSON.parse(body.location) : undefined;
-            facilities = body.facilities ? JSON.parse(body.facilities) : undefined;
-        } catch (_e) {
-            return res.status(400).json({ message: 'facilities must be a valid JSON string' });
-        }
-		// Required fields
-		if (!body.name || !body.address) {
-			return res.status(400).json({ message: 'name and address are required' });
+		let location = undefined;
+		let facilities = undefined;
+		try {
+			location = body.location ? JSON.parse(body.location) : undefined;
+			facilities = body.facilities ? JSON.parse(body.facilities) : undefined;
+		} catch (_e) {
+			return res.status(400).json({ message: 'facilities must be a valid JSON string' });
 		}
-		const price = Number(body.pricePerMonth);
-		if (!Number.isFinite(price) || price <= 0) {
-			return res.status(400).json({ message: 'pricePerMonth must be a positive number' });
+
+		// Comprehensive validation
+		const errors = [];
+		
+		// Required fields validation
+		if (!body.name || body.name.trim().length === 0) {
+			errors.push('name is required');
 		}
-        // location removed/optional: no validation required
+		if (!body.address || body.address.trim().length === 0) {
+			errors.push('address is required');
+		}
+		if (!body.pricePerMonth) {
+			errors.push('pricePerMonth is required');
+		}
+		if (!body.gender) {
+			errors.push('gender is required');
+		}
+		if (!facilities || typeof facilities !== 'object') {
+			errors.push('facilities is required');
+		}
+		if (!location || !location.coordinates || !Array.isArray(location.coordinates) || location.coordinates.length !== 2) {
+			errors.push('location with coordinates is required');
+		}
+
+		// Data type and format validation
+		if (body.pricePerMonth) {
+			const price = Number(body.pricePerMonth);
+			if (!Number.isFinite(price) || price <= 0) {
+				errors.push('pricePerMonth must be a positive number');
+			}
+		}
+
+		if (body.gender && !['male', 'female', 'unisex'].includes(body.gender)) {
+			errors.push('gender must be male, female, or unisex');
+		}
+
+		// Location validation
+		if (location && location.coordinates) {
+			const [lng, lat] = location.coordinates;
+			if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+				errors.push('location coordinates must be valid numbers');
+			}
+			if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+				errors.push('location coordinates must be within valid ranges');
+			}
+		}
+
+		// Facilities validation
+		if (facilities && typeof facilities === 'object') {
+			const validFacilities = ['wifi', 'food', 'ac', 'laundry', 'attachedBathroom', 'parking'];
+			const facilityKeys = Object.keys(facilities);
+			const invalidFacilities = facilityKeys.filter(key => !validFacilities.includes(key));
+			if (invalidFacilities.length > 0) {
+				errors.push(`invalid facilities: ${invalidFacilities.join(', ')}`);
+			}
+		}
+
+		// Name length validation
+		if (body.name && body.name.length > 100) {
+			errors.push('name must be 100 characters or less');
+		}
+
+		// Address length validation
+		if (body.address && body.address.length > 200) {
+			errors.push('address must be 200 characters or less');
+		}
+
+		if (errors.length > 0) {
+			return res.status(400).json({ 
+				message: 'Validation failed', 
+				errors: errors 
+			});
+		}
+
 		// Coerce numeric optionals
 		const availableBeds = body.availableBeds !== undefined ? Number(body.availableBeds) : 0;
 		const totalBeds = body.totalBeds !== undefined ? Number(body.totalBeds) : 0;
+		
 		const listing = await Listing.create({
 			ownerId: req.user.id,
-			name: body.name,
-			description: body.description,
-			address: body.address,
-			collegeName: body.collegeName,
-            ...(location ? { location } : {}),
-			pricePerMonth: price,
+			name: body.name.trim(),
+			description: body.description?.trim(),
+			address: body.address.trim(),
+			collegeName: body.collegeName?.trim(),
+			location,
+			pricePerMonth: Number(body.pricePerMonth),
 			gender: body.gender,
 			facilities,
 			photos,
@@ -104,6 +170,19 @@ export async function updateListing(req, res, next) {
 		const updates = { ...req.body };
 		if (updates.location && typeof updates.location === 'string') updates.location = JSON.parse(updates.location);
 		if (updates.facilities && typeof updates.facilities === 'string') updates.facilities = JSON.parse(updates.facilities);
+		
+		// Handle photo deletions
+		if (updates.deletedPhotos) {
+			const deletedPublicIds = JSON.parse(updates.deletedPhotos);
+			// Remove photos from database
+			updates.$pull = { photos: { publicId: { $in: deletedPublicIds } } };
+			// Delete from Cloudinary
+			await Promise.all(deletedPublicIds.map(publicId => 
+				cloudinary.uploader.destroy(publicId).catch(() => null)
+			));
+		}
+		
+		// Handle new photo uploads
 		if (req.files && req.files.length) {
 			const photos = req.files.map((f) => ({ url: f.path, publicId: f.filename }));
 			updates.$push = { photos: { $each: photos } };
@@ -121,6 +200,15 @@ export async function updateListing(req, res, next) {
 				updates[k] = Number.isFinite(v) ? v : 0;
 			}
 		});
+		// Enforce max 8 photos total. We need current count to validate before pushing new ones
+		const current = await Listing.findOne({ _id: req.params.id, ownerId: req.user.id }, { photos: 1 });
+		if (!current) return res.status(404).json({ message: 'Listing not found' });
+		const removeCount = updates.$pull?.photos?.publicId?.$in?.length || 0;
+		const addCount = updates.$push?.photos?.$each?.length || 0;
+		const resulting = (current.photos?.length || 0) - removeCount + addCount;
+		if (resulting > 8) {
+			return res.status(400).json({ message: 'You can have at most 8 photos per listing' });
+		}
 		const listing = await Listing.findOneAndUpdate({ _id: req.params.id, ownerId: req.user.id }, updates, { new: true });
 		if (!listing) return res.status(404).json({ message: 'Listing not found' });
 		return res.json({ listing });

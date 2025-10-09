@@ -14,7 +14,7 @@ function signRefreshToken(user) {
 	const payload = { id: user._id.toString(), role: user.role };
 	const secret = process.env.JWT_REFRESH_SECRET;
 	if (!secret) throw new Error('JWT_REFRESH_SECRET is not set');
-	return jwt.sign(payload, secret, { expiresIn: '30d' });
+	return jwt.sign(payload, secret, { expiresIn: '7d' });
 }
 
 export async function register(req, res, next) {
@@ -26,7 +26,7 @@ export async function register(req, res, next) {
 		const user = await User.create({ name, email, passwordHash, role: role || 'student', phone });
 		const accessToken = signAccessToken(user);
 		const refreshToken = signRefreshToken(user);
-		res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 30 * 24 * 60 * 60 * 1000 });
+		res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 60 * 60 * 1000 });
 		return res.status(201).json({ user: { id: user._id, name: user.name, email: user.email, role: user.role }, accessToken });
 	} catch (err) {
 		return next(err);
@@ -42,7 +42,7 @@ export async function login(req, res, next) {
 		if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
 		const accessToken = signAccessToken(user);
 		const refreshToken = signRefreshToken(user);
-		res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 30 * 24 * 60 * 60 * 1000 });
+		res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 60 * 60 * 1000 });
 		return res.json({ user: { id: user._id, name: user.name, email: user.email, role: user.role }, accessToken });
 	} catch (err) {
 		return next(err);
