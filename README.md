@@ -18,6 +18,19 @@ A full-stack PG listing platform connecting students with PG owners.
 **Backend:** Node.js, Express, MongoDB, JWT Authentication  
 **Storage:** Cloudinary for images
 
+## 👥 User Roles
+
+- **Students**: Browse, booking PGs, review PGs
+- **Owners**: Create listings, manage bookings, handle inquiries
+
+## 📱 Key Pages
+
+- **Home**: Browse PGs with filters
+- **PG Details**: View listing details and reviews
+- **Owner Dashboard**: Manage listings and bookings
+- **Auth**: Login/Register with role selection
+
+
 ## 📁 Project Structure
 
 ```
@@ -90,19 +103,7 @@ project_5/
    cd client
    npm run dev
    ```
-
-## 👥 User Roles
-
-- **Students**: Browse, booking PGs, review PGs
-- **Owners**: Create listings, manage bookings, handle inquiries
-
-## 📱 Key Pages
-
-- **Home**: Browse PGs with filters
-- **PG Details**: View listing details and reviews
-- **Owner Dashboard**: Manage listings and bookings
-- **Auth**: Login/Register with role selection
-
+   
 ---
 
 **Built with ❤️ using React & Node.js**
