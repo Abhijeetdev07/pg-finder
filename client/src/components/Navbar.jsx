@@ -52,8 +52,8 @@ export default function Navbar() {
         <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b">
             <div className="w-full px-4 flex items-center justify-between min-h-14 py-2">
                 {/* Logo */}
-                <Link to="/" className="font-semibold text-lg text-black hover:text-gray-700 flex-shrink-0 mr-4">
-                    PG Finder
+                <Link to="/" className="flex items-center gap-2 flex-shrink-0 mr-4">
+                    <img src={new URL('../assets/logo.png', import.meta.url).href} alt="PGHub" className="h-8 w-auto" />
                 </Link>
                 
                 {/* Search Form - Only show for logged-in students and never on auth page */}

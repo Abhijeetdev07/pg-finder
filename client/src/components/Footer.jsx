@@ -6,7 +6,9 @@ export default function Footer() {
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
 					{/* Company Info */}
 					<div className="space-y-3">
-						<h3 className="font-semibold text-gray-900">PG Finder</h3>
+						<div className="flex items-center gap-2">
+							<img src={new URL('../assets/logo.png', import.meta.url).href} alt="PGHub" className="h-8 w-auto" />
+						</div>
 						<p className="text-sm text-gray-600 max-w-[300px]">
 							Find the perfect PG accommodation near your college. 
 							Search, compare, and book online.
