@@ -91,4 +91,22 @@ export async function updateMe(req, res, next) {
 	}
 }
 
+export async function updateRole(req, res, next) {
+    try {
+        const { role } = req.body;
+        if (role !== 'student' && role !== 'owner') {
+            return res.status(400).json({ message: 'Invalid role' });
+        }
+        const user = await User.findByIdAndUpdate(
+            req.user.id,
+            { $set: { role } },
+            { new: true }
+        ).select('-passwordHash');
+        const accessToken = signAccessToken(user);
+        return res.json({ user, accessToken });
+    } catch (err) {
+        return next(err);
+    }
+}
+
 

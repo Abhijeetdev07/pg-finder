@@ -84,10 +84,7 @@ export default function Auth() {
                                     {showRegPassword ? <FiEyeOff /> : <FiEye />}
                                 </button>
                             </div>
-                            <select value={regForm.role} onChange={(e) => setRegForm({ ...regForm, role: e.target.value })} className="border rounded px-3 py-2 w-full">
-                                <option value="student">Student</option>
-                                <option value="owner">Owner</option>
-                            </select>
+                            {/* Role selection removed from registration UI. Default is student; user can switch later from navbar. */}
                             <button disabled={regSubmitting} onClick={onRegister} type="button" className="px-4 py-2 rounded bg-black text-white w-full disabled:opacity-60">
                                 {regSubmitting ? 'Please wait...' : 'Register'}
                             </button>

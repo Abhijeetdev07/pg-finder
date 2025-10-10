@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, refresh, logout, me, updateMe } from '../controllers/auth.controller.js';
+import { register, login, refresh, logout, me, updateMe, updateRole } from '../controllers/auth.controller.js';
 import { verifyAccessToken } from '../middlewares/auth.js';
 import Joi from 'joi';
 import { validate } from '../middlewares/validate.js';
@@ -29,6 +29,7 @@ router.post('/refresh', refresh);
 router.post('/logout', logout);
 router.get('/me', verifyAccessToken, me);
 router.patch('/me', verifyAccessToken, updateMe);
+router.patch('/me/role', verifyAccessToken, validate(Joi.object({ body: Joi.object({ role: Joi.string().valid('student','owner').required() }) })), updateRole);
 
 export default router;
 

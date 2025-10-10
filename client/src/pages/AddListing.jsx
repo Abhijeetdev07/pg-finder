@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import FacilityChips from '../components/FacilityChips'
 import ImageUploader from '../components/ImageUploader'
-import { api } from '../utils/api.js'
+import api from '../utils/api.js'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 

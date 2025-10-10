@@ -7,7 +7,7 @@ export default function Footer() {
 					{/* Company Info */}
 					<div className="space-y-3">
 						<h3 className="font-semibold text-gray-900">PG Finder</h3>
-						<p className="text-sm text-gray-600">
+						<p className="text-sm text-gray-600 max-w-[300px]">
 							Find the perfect PG accommodation near your college. 
 							Search, compare, and book online.
 						</p>

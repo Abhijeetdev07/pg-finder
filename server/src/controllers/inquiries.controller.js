@@ -4,8 +4,11 @@ import { Listing } from '../models/Listing.js';
 export async function createInquiry(req, res, next) {
 	try {
 		const { listingId, message, contactVia } = req.body;
-		const listing = await Listing.findById(listingId).select('ownerId');
+        const listing = await Listing.findById(listingId).select('ownerId');
 		if (!listing) return res.status(404).json({ message: 'Listing not found' });
+        if (String(listing.ownerId) === String(req.user.id)) {
+            return res.status(400).json({ message: 'Owners cannot create inquiries or visit requests on their own listing' });
+        }
 		const inquiry = await Inquiry.create({ listingId, studentId: req.user.id, ownerId: listing.ownerId, message, contactVia });
 		return res.status(201).json({ inquiry });
 	} catch (err) {

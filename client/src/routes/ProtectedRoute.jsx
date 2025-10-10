@@ -1,15 +1,44 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { refresh, fetchMe } from '../features/auth/authSlice.js';
 
 export default function ProtectedRoute({ redirectTo = '/auth', allowedRoles }) {
+    const dispatch = useDispatch();
     const { user, initialized, status } = useSelector((s) => s.auth);
+    const [attempting, setAttempting] = useState(false);
+    const triedRef = useRef(false);
     // Wait for auth bootstrap to finish to avoid redirect flicker on refresh
     if (!initialized && (status === 'loading' || status === 'idle')) {
         return <div className="p-4 text-sm text-gray-600">Loading...</div>;
     }
-    if (!user) return <Navigate to={redirectTo} replace />;
-	if (allowedRoles && !allowedRoles.includes(user.role)) return <Navigate to={redirectTo} replace />;
-	return <Outlet />;
+    // If not logged in, attempt a last-chance silent refresh once before redirecting
+    useEffect(() => {
+        async function attempt() {
+            if (!user && initialized && !triedRef.current) {
+                triedRef.current = true;
+                setAttempting(true);
+                try {
+                    await dispatch(refresh()).unwrap();
+                    await dispatch(fetchMe()).unwrap();
+                } catch {
+                    // ignore
+                } finally {
+                    setAttempting(false);
+                }
+            }
+        }
+        attempt();
+    }, [user, initialized, dispatch]);
+    if (!user) {
+        if (attempting) {
+            return <div className="p-4 text-sm text-gray-600">Signing you in…</div>;
+        }
+        return <Navigate to={redirectTo} replace />;
+    }
+    // Logged in but role not allowed -> send to home
+    if (allowedRoles && !allowedRoles.includes(user.role)) return <Navigate to="/" replace />;
+    return <Outlet />;
 }
 
 

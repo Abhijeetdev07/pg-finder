@@ -1,14 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react'
-import { logout } from '../features/auth/authSlice.js'
+import { logout, setCredentials } from '../features/auth/authSlice.js'
+import api from '../utils/api.js'
 import { FiChevronDown, FiUser, FiHeart, FiCalendar, FiMessageSquare, FiLogOut } from 'react-icons/fi'
 
 export default function Navbar() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const location = useLocation()
-    const user = useSelector((s) => s.auth.user)
+    const { user, initialized } = useSelector((s) => s.auth)
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const dropdownRef = useRef(null)
 
@@ -45,10 +46,7 @@ export default function Navbar() {
         setDropdownOpen(false)
     }
 
-    // Don't render navbar on auth page or for non-logged-in users
-    if (isAuthPage || !user) {
-        return null;
-    }
+    // Always render navbar; adjust content if not logged in
 
     return (
         <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b">
@@ -58,47 +56,55 @@ export default function Navbar() {
                     PG Finder
                 </Link>
                 
-                {/* Search Form */}
-                <form
-                    onSubmit={(e) => { 
-                        e.preventDefault(); 
-                        const q = new FormData(e.currentTarget).get('q')?.toString().trim(); 
-                        const url = new URL(window.location.href); 
-                        if (q) { 
-                            url.searchParams.set('q', q) 
-                        } else { 
-                            url.searchParams.delete('q') 
-                        } 
-                        window.location.assign(url.toString()) 
-                    }}
-                    className="flex items-center gap-2 flex-1 max-w-2xl"
-                >
-                    <input 
-                        name="q" 
-                        type="text" 
-                        placeholder="Search PGs..." 
-                        className="border rounded px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                    />
-                    <button 
-                        type="submit" 
-                        className="px-3 py-2 rounded bg-black text-white text-sm whitespace-nowrap hover:bg-gray-800 transition-colors flex-shrink-0"
+                {/* Search Form - Only show for logged-in students and never on auth page */}
+                {!isAuthPage && user && user.role === 'student' && (
+                    <form
+                        onSubmit={(e) => { 
+                            e.preventDefault(); 
+                            const q = new FormData(e.currentTarget).get('q')?.toString().trim(); 
+                            const url = new URL(window.location.href); 
+                            if (q) { 
+                                url.searchParams.set('q', q) 
+                            } else { 
+                                url.searchParams.delete('q') 
+                            } 
+                            window.location.assign(url.toString()) 
+                        }}
+                        className="flex items-center gap-2 flex-1 max-w-2xl"
                     >
-                        Search
-                    </button>
-                </form>
+                        <input 
+                            name="q" 
+                            type="text" 
+                            placeholder="Search PGs..." 
+                            className="border rounded px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                        />
+                        <button 
+                            type="submit" 
+                            className="px-3 py-2 rounded bg-black text-white text-sm whitespace-nowrap hover:bg-gray-800 transition-colors flex-shrink-0"
+                        >
+                            Search
+                        </button>
+                    </form>
+                )}
                 
                 {/* User Actions */}
                 <div className="flex items-center gap-2 flex-shrink-0">
+                    {isAuthPage ? null : (!user ? (
+                        <div className="flex items-center gap-2">
+                            <Link to="/auth?mode=login" className="px-3 py-2 rounded border text-sm">Login</Link>
+                            <Link to="/auth" className="px-3 py-2 rounded bg-black text-white text-sm">Register</Link>
+                        </div>
+                    ) : (
                     <div className="relative" ref={dropdownRef}>
                         <button
                             onClick={() => setDropdownOpen(!dropdownOpen)}
                             className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
                         >
                             <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">
-                                {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                             </div>
                             <span className="text-sm text-gray-700 hidden md:block max-w-20 truncate">
-                                {user.name}
+                                {user?.name || 'User'}
                             </span>
                             <FiChevronDown className={`text-gray-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} size={16} />
                         </button>
@@ -106,11 +112,11 @@ export default function Navbar() {
                         {dropdownOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-1 z-50">
                                 <div className="px-4 py-2 border-b">
-                                    <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
-                                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                    <p className="text-sm font-medium text-gray-900 truncate">{user?.name || 'User'}</p>
+                                    <p className="text-xs text-gray-500 truncate">{user?.email || ''}</p>
                                 </div>
                                 
-                                {user.role === 'student' && (
+                                {user && user.role === 'student' && (
                                     <>
                                         <button
                                             onClick={() => handleDropdownItemClick('/favorites')}
@@ -136,7 +142,7 @@ export default function Navbar() {
                                     </>
                                 )}
                                 
-                                {user.role === 'owner' && (
+                                {user && user.role === 'owner' && (
                                     <>
                                         <button
                                             onClick={() => handleDropdownItemClick('/owner')}
@@ -144,6 +150,13 @@ export default function Navbar() {
                                         >
                                             <FiUser size={16} className="flex-shrink-0" />
                                             <span className="truncate">Owner Dashboard</span>
+                                        </button>
+                                        <button
+                                            onClick={() => handleDropdownItemClick('/owner/listings/new')}
+                                            className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                        >
+                                            <FiUser size={16} className="flex-shrink-0" />
+                                            <span className="truncate">Create a listing</span>
                                         </button>
                                         <button
                                             onClick={() => handleDropdownItemClick('/owner/listings')}
@@ -156,6 +169,23 @@ export default function Navbar() {
                                 )}
                                 
                                 <div className="border-t my-1"></div>
+                                {/* Role Switcher */}
+                                <button
+                                    onClick={async () => {
+                                        const nextRole = user.role === 'student' ? 'owner' : 'student'
+                                        try {
+                                            const { data } = await api.patch('/api/auth/me/role', { role: nextRole })
+                                            dispatch(setCredentials({ user: data.user, accessToken: data.accessToken }))
+                                            navigate(nextRole === 'owner' ? '/owner' : '/')
+                                        } catch (e) {
+                                            alert(e?.response?.data?.message || 'Failed to switch role')
+                                        }
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                    <FiUser size={16} className="flex-shrink-0" />
+                                    <span className="truncate">{user.role === 'student' ? 'Switch to Owner' : 'Switch to Student'}</span>
+                                </button>
                                 <button
                                     onClick={onLogout}
                                     className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -166,6 +196,7 @@ export default function Navbar() {
                             </div>
                         )}
                     </div>
+                    ))}
                 </div>
             </div>
         </header>

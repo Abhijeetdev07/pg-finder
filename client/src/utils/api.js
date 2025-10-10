@@ -32,8 +32,11 @@ api.interceptors.response.use(
     async (error) => {
         const original = error.config;
         // Do not try to refresh if the failing call is the refresh endpoint itself
-        const isRefreshCall = typeof original?.url === 'string' && original.url.includes('/api/auth/refresh');
-        if (error.response?.status === 401 && !original._retry && !isRefreshCall) {
+        const url = typeof original?.url === 'string' ? original.url : '';
+        const isRefreshCall = url.includes('/api/auth/refresh');
+        // Also avoid auto-refresh for bootstrap/user discovery calls to reduce duplicate 401s on first load
+        const isUserProbe = url.includes('/api/auth/me') || url.includes('/api/auth/login') || url.includes('/api/auth/register');
+        if (error.response?.status === 401 && !original._retry && !isRefreshCall && !isUserProbe) {
 			original._retry = true;
 			try {
 				if (!isRefreshing) {
@@ -71,3 +74,6 @@ api.interceptors.response.use(
         return Promise.reject(error);
 	}
 );
+
+// Also export default for compatibility with places importing `api` as default
+export default api;

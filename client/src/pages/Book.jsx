@@ -1,27 +1,32 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { api } from '../utils/api.js'
+import api from '../utils/api.js'
 import toast from 'react-hot-toast'
 
 export default function Book() {
     const { id } = useParams()
     const navigate = useNavigate()
     const user = useSelector((s) => s.auth.user)
+    const currentListing = useSelector((s) => s.listings.current)
     const [startDate, setStartDate] = useState('')
     const [durationMonths, setDurationMonths] = useState('')
-    const [visitRequested, setVisitRequested] = useState(false)
+    // Removed visit-only option: students must provide start date and duration
     const [submitting, setSubmitting] = useState(false)
 
     async function onSubmit(e) {
         e.preventDefault()
         if (!user) return navigate('/auth')
+        if (currentListing && user.id === currentListing.ownerId) {
+            toast.error('You cannot book your own listing')
+            return
+        }
         
         // Enhanced validation
         const errors = []
         
-        if (!visitRequested && (!startDate || !durationMonths)) {
-            errors.push('Please provide start date and duration for booking, or check "Request visit only"')
+        if (!startDate || !durationMonths) {
+            errors.push('Please provide start date and duration for booking')
         }
         
         if (startDate) {
@@ -51,9 +56,8 @@ export default function Book() {
             setSubmitting(true)
             const payload = { 
                 listingId: id, 
-                startDate: visitRequested ? undefined : startDate, 
-                durationMonths: visitRequested ? undefined : durationMonths,
-                visitRequested: visitRequested
+                startDate,
+                durationMonths
             }
             await api.post('/api/bookings', payload)
             toast.success('Booking created')
@@ -74,26 +78,13 @@ export default function Book() {
         <section className="p-4 space-y-3">
             <h1 className="text-2xl font-semibold">Book PG</h1>
             <form onSubmit={onSubmit} className="space-y-3 max-w-md">
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2">
-                        <input 
-                            type="checkbox" 
-                            checked={visitRequested} 
-                            onChange={(e) => setVisitRequested(e.target.checked)}
-                            className="rounded"
-                        />
-                        <span className="text-sm">Request visit only (no booking)</span>
-                    </label>
-                </div>
-                
-                <div className={`space-y-3 ${visitRequested ? 'opacity-50' : ''}`}>
+                <div className="space-y-3">
                     <input 
                         value={startDate} 
                         onChange={(e) => setStartDate(e.target.value)} 
                         type="date" 
                         className="border rounded px-3 py-2 w-full" 
-                        disabled={visitRequested}
-                        required={!visitRequested}
+                        required
                     />
                     <input 
                         value={durationMonths} 
@@ -101,13 +92,12 @@ export default function Book() {
                         type="number" 
                         placeholder="Duration (months)" 
                         className="border rounded px-3 py-2 w-full" 
-                        disabled={visitRequested}
-                        required={!visitRequested}
+                        required
                     />
                 </div>
                 
                 <button disabled={submitting} type="submit" className="px-4 py-2 rounded bg-black text-white disabled:opacity-60">
-                    {submitting ? 'Submitting...' : visitRequested ? 'Request Visit' : 'Book PG'}
+                    {submitting ? 'Submitting...' : 'Book PG'}
                 </button>
             </form>
         </section>

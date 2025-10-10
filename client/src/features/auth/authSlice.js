@@ -3,21 +3,41 @@ import { api } from '../../utils/api.js';
 
 // Example async thunks (wire to API later)
 export const register = createAsyncThunk('auth/register', async (payload, { rejectWithValue }) => {
-	try {
-		const { data } = await api.post('/api/auth/register', payload);
-		return data; // { user, accessToken }
-	} catch (err) {
-		return rejectWithValue(err?.response?.data || { message: 'Register failed' });
-	}
+    try {
+        const { data } = await api.post('/api/auth/register', payload);
+        return data; // { user, accessToken }
+    } catch (err) {
+        const status = err?.response?.status;
+        if (status === 429) {
+            await new Promise((r) => setTimeout(r, 1200));
+            try {
+                const { data } = await api.post('/api/auth/register', payload);
+                return data;
+            } catch (retryErr) {
+                return rejectWithValue(retryErr?.response?.data || { message: 'Too many requests. Please wait a few seconds and try again.' });
+            }
+        }
+        return rejectWithValue(err?.response?.data || { message: 'Register failed' });
+    }
 });
 
 export const login = createAsyncThunk('auth/login', async (payload, { rejectWithValue }) => {
-	try {
-		const { data } = await api.post('/api/auth/login', payload);
-		return data; // { user, accessToken }
-	} catch (err) {
-		return rejectWithValue(err?.response?.data || { message: 'Login failed' });
-	}
+    try {
+        const { data } = await api.post('/api/auth/login', payload);
+        return data; // { user, accessToken }
+    } catch (err) {
+        const status = err?.response?.status;
+        if (status === 429) {
+            await new Promise((r) => setTimeout(r, 1200));
+            try {
+                const { data } = await api.post('/api/auth/login', payload);
+                return data;
+            } catch (retryErr) {
+                return rejectWithValue(retryErr?.response?.data || { message: 'Too many requests. Please wait a few seconds and try again.' });
+            }
+        }
+        return rejectWithValue(err?.response?.data || { message: 'Login failed' });
+    }
 });
 
 export const logoutThunk = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
@@ -52,13 +72,13 @@ const initialState = {
     accessToken: null,
     status: 'idle', // idle | loading | succeeded | failed
     error: null,
-    initialized: false, // becomes true after we complete bootstrap (fetchMe or failed)
+    initialized: false, // set to true after explicit bootstrap completes
 };
 
 const authSlice = createSlice({
 	name: 'auth',
 	initialState,
-	reducers: {
+    reducers: {
 		setCredentials(state, action) {
 			state.user = action.payload.user || null;
 			state.accessToken = action.payload.accessToken || null;
@@ -67,6 +87,9 @@ const authSlice = createSlice({
 			state.user = null;
 			state.accessToken = null;
 		},
+        setInitialized(state, action) {
+            state.initialized = Boolean(action.payload);
+        }
 	},
 	extraReducers: (builder) => {
 		builder
@@ -100,10 +123,9 @@ const authSlice = createSlice({
 				state.user = null;
 				state.accessToken = null;
 			})
-			.addCase(fetchMe.fulfilled, (state, action) => {
+            .addCase(fetchMe.fulfilled, (state, action) => {
 				state.user = action.payload.user;
                 state.status = 'succeeded';
-                state.initialized = true;
 			})
             .addCase(fetchMe.pending, (state) => {
                 state.status = 'loading';
@@ -111,7 +133,6 @@ const authSlice = createSlice({
             .addCase(fetchMe.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload || action.error;
-                state.initialized = true;
             })
 			.addCase(refresh.fulfilled, (state, action) => {
 				state.accessToken = action.payload.accessToken;
@@ -123,12 +144,11 @@ const authSlice = createSlice({
             .addCase(refresh.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload || action.error;
-                state.initialized = true; // no refresh -> allow login screen
             });
 	},
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, logout, setInitialized } = authSlice.actions;
 export default authSlice.reducer;
 
 

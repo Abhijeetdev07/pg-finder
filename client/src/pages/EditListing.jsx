@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import FacilityChips from '../components/FacilityChips'
 import ImageUploader from '../components/ImageUploader'
-import { api } from '../utils/api.js'
+import api from '../utils/api.js'
 import toast from 'react-hot-toast'
 import { FiX } from 'react-icons/fi'
 

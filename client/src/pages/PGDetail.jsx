@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Gallery from '../components/Gallery'
 import RatingStars from '../components/RatingStars'
 import { fetchListingById } from '../features/listings/listingsSlice'
-import { api } from '../utils/api.js'
+import api from '../utils/api.js'
 import toast from 'react-hot-toast'
 import { FiX } from 'react-icons/fi'
 import { FaEdit, FaStar, FaRegStar } from "react-icons/fa";
@@ -14,6 +14,7 @@ export default function PGDetail() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { current: listing, status } = useSelector((s) => s.listings)
+    const currentUser = useSelector((s) => s.auth.user)
     const [selectedRating, setSelectedRating] = useState(0)
     const [submitting, setSubmitting] = useState(false)
     const [showReviewForm, setShowReviewForm] = useState(false)
@@ -44,8 +45,22 @@ export default function PGDetail() {
                 <div className="text-right">
                     <p className="text-xl font-semibold">₹ {Number(listing.pricePerMonth).toLocaleString()}</p>
                     <div className="mt-2 flex gap-2 justify-end">
-                        <button onClick={() => navigate(`/book/${listing._id}`)} className="px-3 py-2 rounded bg-black text-white text-sm">Book</button>
-                        <button onClick={() => navigate(`/request-visit/${listing._id}`)} className="px-3 py-2 rounded border text-sm">Request Visit</button>
+                        <button 
+                            onClick={() => navigate(`/book/${listing._id}`)} 
+                            className="px-3 py-2 rounded bg-black text-white text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                            disabled={currentUser && currentUser.id === listing.ownerId}
+                            title={currentUser && currentUser.id === listing.ownerId ? 'Owners cannot book their own listing' : undefined}
+                        >
+                            Book
+                        </button>
+                        <button 
+                            onClick={() => navigate(`/request-visit/${listing._id}`)} 
+                            className="px-3 py-2 rounded border text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                            disabled={currentUser && currentUser.id === listing.ownerId}
+                            title={currentUser && currentUser.id === listing.ownerId ? 'Owners cannot request visit for their own listing' : undefined}
+                        >
+                            Request Visit
+                        </button>
                     </div>
                 </div>
             </div>

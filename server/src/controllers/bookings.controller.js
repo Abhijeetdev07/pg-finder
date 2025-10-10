@@ -13,13 +13,16 @@ export async function createBooking(req, res, next) {
 			errors.push('listingId is required');
 		}
 		
-		// Validate listing exists
-		if (listingId) {
-			const listing = await Listing.findById(listingId);
-			if (!listing) {
-				errors.push('listing not found');
-			}
-		}
+        // Validate listing exists and prevent owner self-action
+        let listing = null;
+        if (listingId) {
+            listing = await Listing.findById(listingId).select('ownerId');
+            if (!listing) {
+                errors.push('listing not found');
+            } else if (String(listing.ownerId) === String(req.user.id)) {
+                return res.status(400).json({ message: 'Owners cannot book or request a visit for their own listing' });
+            }
+        }
 		
 		// Booking validation: startDate+durationMonths OR visitRequested=true
 		const hasBookingDetails = startDate && durationMonths;
@@ -65,7 +68,7 @@ export async function createBooking(req, res, next) {
 			});
 		}
 		
-		const booking = await Booking.create({
+        const booking = await Booking.create({
 			listingId,
 			studentId: req.user.id,
 			startDate: startDate ? new Date(startDate) : undefined,

@@ -9,12 +9,17 @@ export default function RequestVisit() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const user = useSelector((s) => s.auth.user)
+    const currentListing = useSelector((s) => s.listings.current)
     const [message, setMessage] = useState('')
     const [submitting, setSubmitting] = useState(false)
 
     async function onSubmit(e) {
         e.preventDefault()
         if (!user) return navigate('/auth')
+        if (currentListing && user.id === currentListing.ownerId) {
+            toast.error('You cannot request a visit for your own listing')
+            return
+        }
         if (!message.trim()) return toast.error('Please enter a message')
         
         try {
