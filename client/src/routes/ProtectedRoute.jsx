@@ -8,10 +8,7 @@ export default function ProtectedRoute({ redirectTo = '/auth', allowedRoles }) {
     const { user, initialized, status } = useSelector((s) => s.auth);
     const [attempting, setAttempting] = useState(false);
     const triedRef = useRef(false);
-    // Wait for auth bootstrap to finish to avoid redirect flicker on refresh
-    if (!initialized && (status === 'loading' || status === 'idle')) {
-        return <div className="p-4 text-sm text-gray-600">Loading...</div>;
-    }
+    // All hooks must be declared before any conditional returns
     // If not logged in, attempt a last-chance silent refresh once before redirecting
     useEffect(() => {
         async function attempt() {
@@ -30,6 +27,15 @@ export default function ProtectedRoute({ redirectTo = '/auth', allowedRoles }) {
         }
         attempt();
     }, [user, initialized, dispatch]);
+
+    // Wait for auth bootstrap to finish to avoid redirect flicker on refresh
+    if (!initialized && (status === 'loading' || status === 'idle')) {
+        return <div className="p-4 text-sm text-gray-600">Loading...</div>;
+    }
+    // If we have no user yet but haven't started the last-chance refresh, hold here
+    if (!user && initialized && !triedRef.current) {
+        return <div className="p-4 text-sm text-gray-600">Signing you in…</div>;
+    }
     if (!user) {
         if (attempting) {
             return <div className="p-4 text-sm text-gray-600">Signing you in…</div>;

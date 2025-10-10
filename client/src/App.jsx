@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import PGDetail from './pages/PGDetail'
+import Search from './pages/Search'
 import Favorites from './pages/Favorites'
 import Book from './pages/Book'
 import RequestVisit from './pages/RequestVisit'
@@ -27,6 +28,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/pg/:id" element={<PGDetail />} />
             <Route path="/favorites" element={<Favorites />} />
+            <Route path="/search" element={<Search />} />
             <Route element={<ProtectedRoute />}> 
               <Route path="/book/:id" element={<Book />} />
               <Route path="/request-visit/:id" element={<RequestVisit />} />

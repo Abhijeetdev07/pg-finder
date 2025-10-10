@@ -62,13 +62,9 @@ export default function Navbar() {
                         onSubmit={(e) => { 
                             e.preventDefault(); 
                             const q = new FormData(e.currentTarget).get('q')?.toString().trim(); 
-                            const url = new URL(window.location.href); 
-                            if (q) { 
-                                url.searchParams.set('q', q) 
-                            } else { 
-                                url.searchParams.delete('q') 
-                            } 
-                            window.location.assign(url.toString()) 
+                            const params = new URLSearchParams();
+                            if (q) params.set('q', q);
+                            navigate(`/search?${params.toString()}`);
                         }}
                         className="flex items-center gap-2 flex-1 max-w-2xl"
                     >

@@ -9,6 +9,11 @@ export async function createInquiry(req, res, next) {
         if (String(listing.ownerId) === String(req.user.id)) {
             return res.status(400).json({ message: 'Owners cannot create inquiries or visit requests on their own listing' });
         }
+		// Prevent duplicate open inquiries for the same listing by the same student
+		const existingOpen = await Inquiry.findOne({ listingId, studentId: req.user.id, status: 'open' }).select('_id');
+		if (existingOpen) {
+			return res.status(400).json({ message: 'You already have a pending inquiry for this listing. Please wait for a response.' });
+		}
 		const inquiry = await Inquiry.create({ listingId, studentId: req.user.id, ownerId: listing.ownerId, message, contactVia });
 		return res.status(201).json({ inquiry });
 	} catch (err) {

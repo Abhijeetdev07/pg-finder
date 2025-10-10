@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import FiltersBar from '../components/FiltersBar'
+// FiltersBar removed per request
 import Card from '../components/Card'
 import Pagination from '../components/Pagination'
 import { fetchListings } from '../features/listings/listingsSlice'
@@ -24,18 +24,7 @@ export default function Search() {
         dispatch(fetchListings(filters))
     }, [dispatch, filters])
 
-    function onFiltersChange(next) {
-        const merged = { ...filters, ...next, page: 1 }
-        setSp(merged)
-    }
-
-    function onClear() {
-        setSp({})
-    }
-
-    function onSortChange(e) {
-        setSp({ ...filters, sort: e.target.value || 'newest' })
-    }
+    // Filters and sorting removed
 
     function onPageChange(page) {
         setSp({ ...filters, page: String(page) })
@@ -43,17 +32,8 @@ export default function Search() {
 
     return (
         <section className="p-4 space-y-4">
-            <div className="flex gap-4">
-                <FiltersBar value={filters} onChange={onFiltersChange} onClear={onClear} />
-                <div className="flex-1">
-                    <div className="flex items-center justify-end mb-3">
-                        <select value={filters.sort || 'newest'} onChange={onSortChange} className="border rounded px-3 py-2 text-sm">
-                    <option value="newest">Newest</option>
-                    <option value="priceAsc">Price: Low to High</option>
-                    <option value="priceDesc">Price: High to Low</option>
-                    <option value="ratingDesc">Top Rated</option>
-                        </select>
-                    </div>
+            <div>
+                <div>
                     {status === 'loading' && <p className="text-sm text-gray-500">Loading...</p>}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {items.map((l) => (
@@ -63,6 +43,9 @@ export default function Search() {
                                 subtitle={l.collegeName}
                                 image={l.photos?.[0]?.url}
                                 price={l.pricePerMonth}
+                                rating={l.avgRating}
+                                reviewsCount={l.numReviews}
+                                id={l._id}
                                 onClick={() => navigate(`/pg/${l._id}`)}
                             />
                         ))}

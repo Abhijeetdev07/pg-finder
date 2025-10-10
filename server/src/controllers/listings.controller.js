@@ -5,9 +5,18 @@ import { cloudinary } from '../config/cloudinary.js';
 
 export async function listListings(req, res, next) {
 	try {
-		const { q, college, minPrice, maxPrice, gender, page = 1, limit = 12, sort } = req.query;
-		const filter = {};
-		if (q) filter.$text = { $search: q };
+        const { q, college, minPrice, maxPrice, gender, page = 1, limit = 12, sort } = req.query;
+        const filter = {};
+        if (q) {
+            // Use regex across fields to avoid Mongo planner error combining TEXT with other $or clauses
+            const regex = { $regex: q, $options: 'i' };
+            filter.$or = [
+                { name: regex },
+                { address: regex },
+                { collegeName: regex },
+                { description: regex },
+            ];
+        }
 		if (college) filter.collegeName = { $regex: college, $options: 'i' };
 		if (gender) filter.gender = gender;
 		if (minPrice || maxPrice) filter.pricePerMonth = { ...(minPrice ? { $gte: Number(minPrice) } : {}), ...(maxPrice ? { $lte: Number(maxPrice) } : {}) };
@@ -17,21 +26,15 @@ export async function listListings(req, res, next) {
 		});
 		const skip = (Number(page) - 1) * Number(limit);
 
-		const sortMap = {
-			'priceAsc': { pricePerMonth: 1 },
-			'priceDesc': { pricePerMonth: -1 },
-			'ratingDesc': { avgRating: -1, numReviews: -1 },
-			'newest': { createdAt: -1 },
-			'relevance': q ? { score: { $meta: 'textScore' } } : { createdAt: -1 },
-		};
-		const sortSpec = sortMap[sort] || sortMap[q ? 'relevance' : 'newest'];
+        const sortMap = {
+            priceAsc: { pricePerMonth: 1 },
+            priceDesc: { pricePerMonth: -1 },
+            ratingDesc: { avgRating: -1, numReviews: -1 },
+            newest: { createdAt: -1 },
+        };
+        const sortSpec = sortMap[sort] || sortMap['newest'];
 
-		const query = Listing.find(filter).skip(skip).limit(Number(limit));
-		if (sortSpec.score) {
-			query.sort(sortSpec).select({ score: { $meta: 'textScore' } });
-		} else {
-			query.sort(sortSpec);
-		}
+        const query = Listing.find(filter).skip(skip).limit(Number(limit)).sort(sortSpec);
 
 		const [items, total] = await Promise.all([
 			query,

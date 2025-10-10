@@ -67,6 +67,12 @@ export async function createBooking(req, res, next) {
 				errors: errors 
 			});
 		}
+
+		// Prevent duplicate pending requests for the same listing by the same student
+		const existingPending = await Booking.findOne({ listingId, studentId: req.user.id, status: 'pending' }).select('_id');
+		if (existingPending) {
+			return res.status(400).json({ message: 'You already have a pending request for this listing. Please wait for a response.' });
+		}
 		
         const booking = await Booking.create({
 			listingId,
