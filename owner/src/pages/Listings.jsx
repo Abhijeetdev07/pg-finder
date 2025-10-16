@@ -1,0 +1,73 @@
+import OwnerNavbar from '../components/OwnerNavbar.jsx';
+import Sidebar from '../components/Sidebar.jsx';
+import { Link } from 'react-router-dom';
+import { AiOutlineEdit } from 'react-icons/ai';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { deletePg, fetchOwnerListings } from '../features/listings/slice.js';
+
+export default function Listings() {
+  const dispatch = useDispatch();
+  const { items, status, error } = useSelector((s) => s.listings);
+
+  useEffect(() => {
+    dispatch(fetchOwnerListings({ limit: 50 }));
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <OwnerNavbar />
+      <div className="mx-auto max-w-7xl flex">
+        <Sidebar />
+        <main className="flex-1 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-xl font-semibold">Your Listings</h1>
+            <Link to="/listings/new" className="px-3 py-1 border rounded-md bg-gray-900 text-white hover:bg-gray-800">Add PG</Link>
+          </div>
+          {status==='loading' && <div className="border rounded bg-white p-3 text-sm">Loading…</div>}
+          {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}
+          {(!items || items.length===0) && status!=='loading' && (
+            <div className="border rounded bg-white p-3 text-sm text-gray-600">No listings yet. Click "Add PG" to create your first listing.</div>
+          )}
+          {items && items.length>0 && (
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm bg-white border rounded">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="text-left px-3 py-2">Title</th>
+                    <th className="text-left px-3 py-2">City</th>
+                    <th className="text-left px-3 py-2">Rent</th>
+                    <th className="text-left px-3 py-2">Rooms</th>
+                    <th className="text-left px-3 py-2">Created</th>
+                    <th className="px-3 py-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((pg)=> (
+                    <tr key={pg._id} className="border-t">
+                      <td className="px-3 py-2">{pg.title}</td>
+                      <td className="px-3 py-2">{pg.city}</td>
+                      <td className="px-3 py-2">₹{pg.rent}</td>
+                      <td className="px-3 py-2">{pg.roomsAvailable ?? '-'}</td>
+                      <td className="px-3 py-2">{pg.createdAt ? new Date(pg.createdAt).toLocaleDateString() : '-'}</td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-2 justify-center">
+                          <Link to={`/listings/${pg._id}/edit`} className="px-2 py-1 border rounded flex items-center gap-1">
+                            <AiOutlineEdit />
+                            <span>Edit</span>
+                          </Link>
+                          <button onClick={()=>dispatch(deletePg(pg._id))} className="px-2 py-1 border rounded border-red-200 text-red-700 bg-red-50 hover:bg-red-100">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
+
