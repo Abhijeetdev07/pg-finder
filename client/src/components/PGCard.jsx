@@ -22,10 +22,10 @@ export default function PGCard({ pg, isFavorite, onToggleFavorite }) {
   };
 
   return (
-    <div className="border rounded-lg overflow-hidden w-[280px] relative">
+    <div className="border rounded-lg overflow-hidden w-[280px] relative group">
       <Link to={`/pg/${pg._id}`} className="block">
         {cover ? (
-          <img src={cover} alt={pg.title} className="w-full h-40 object-cover" />
+          <img src={cover} alt={pg.title} className="w-full h-40 object-cover transition-transform duration-200 group-hover:scale-105" />
         ) : (
           <div className="w-full h-40 bg-gray-100" />
         )}

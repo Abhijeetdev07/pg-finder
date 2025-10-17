@@ -6,7 +6,6 @@ export default function Sidebar() {
   return (
     <aside className="w-56 border-r p-3 hidden md:block">
       <nav className="grid gap-1 text-sm">
-        <NavLink to="/dashboard" className={({isActive})=>`${link} ${isActive?active:''}`}>Dashboard</NavLink>
         <NavLink to="/listings" className={({isActive})=>`${link} ${isActive?active:''}`}>Listings</NavLink>
         <NavLink to="/inquiries" className={({isActive})=>`${link} ${isActive?active:''}`}>Inquiries</NavLink>
         <NavLink to="/bookings" className={({isActive})=>`${link} ${isActive?active:''}`}>Bookings</NavLink>

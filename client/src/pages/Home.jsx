@@ -18,7 +18,7 @@ export default function Home() {
   }, [filters.page, filters.sort]);
 
   return (
-    <main className="p-4">
+    <main className="min-h-screen p-4 flex flex-col">
       <h1 className="text-xl font-semibold">Find Paying Guests</h1>
 
       {status==='loading' && (
@@ -49,7 +49,7 @@ export default function Home() {
         })}
       </div>
 
-      <div className="mt-4 flex items-center gap-2 justify-end">
+      <div className="mt-auto flex items-center gap-2 justify-end">
         <button className="px-3 py-1 border rounded disabled:opacity-50" disabled={filters.page<=1} onClick={()=>dispatch(setPage(filters.page-1))}>Prev</button>
         <span className="text-sm">Page {meta.page}</span>
         <button className="px-3 py-1 border rounded disabled:opacity-50" disabled={(meta.page*meta.limit)>=meta.total} onClick={()=>dispatch(setPage(filters.page+1))}>Next</button>

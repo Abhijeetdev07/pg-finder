@@ -20,7 +20,7 @@ export default function Login() {
   };
 
   return (
-    <main className="min-h-[calc(100vh-120px)] grid place-items-center p-4">
+    <main className="min-h-screen grid place-items-center p-4">
       <div className="w-full max-w-[420px] bg-white border rounded-xl shadow-md p-6">
         <h1 className="text-2xl font-bold mb-4 text-center">Welcome back</h1>
         <p className="text-gray-500 mb-5 text-center">Login to continue</p>

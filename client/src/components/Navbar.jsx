@@ -2,7 +2,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import { logout, selectAuth } from '../features/auth/slice.js';
-import { AiOutlineHeart, AiOutlineCalendar } from 'react-icons/ai';
+import { AiOutlineHeart } from 'react-icons/ai';
+import Sidebar from './Sidebar.jsx';
 import { setFilters } from '../features/pgs/slice.js';
 import { fetchPgs } from '../features/pgs/slice.js';
 
@@ -12,6 +13,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [query, setQuery] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
 
@@ -26,11 +28,14 @@ export default function Navbar() {
     dispatch(fetchPgs());
     navigate('/');
   };
+  
+  const initial = user?.name ? user.name.trim().charAt(0).toUpperCase() : null;
 
   return (
-    <nav className="sticky top-0 z-50 bg-white flex items-center gap-3 p-3 border-b">
-      <Link to="/" className="text-lg font-semibold">PG-Hub</Link>
-      <div className="flex-1 flex justify-center">
+    <nav className="sticky top-0 z-50 bg-white p-3 border-b">
+      <div className="w-full max-w-[1200px] mx-auto flex items-center gap-3">
+        <Link to="/" className="text-lg font-semibold">PG-Hub</Link>
+        <div className="flex-1 flex justify-center">
         {!isAuthRoute && (
           <form onSubmit={onSearch} className="flex gap-2 w-full max-w-[520px]" role="search" aria-label="Search PGs">
             <input
@@ -43,8 +48,8 @@ export default function Navbar() {
             <button type="submit" className="h-9 px-3 rounded-md border bg-gray-900 text-white hover:bg-gray-800">Search</button>
           </form>
         )}
-      </div>
-      <div className="ml-auto flex items-center gap-3">
+        </div>
+        <div className="ml-auto flex items-center gap-3">
         {!user ? (
           <>
             <Link to="/login" className="hover:underline">Login</Link>
@@ -55,13 +60,19 @@ export default function Navbar() {
             <Link to="/favorites" aria-label="Favorites" title="Favorites" className="inline-flex items-center text-gray-700 hover:text-gray-900">
               <AiOutlineHeart size={20} />
             </Link>
-            <Link to="/bookingSummary" aria-label="Bookings Summary" title="Bookings Summary" className="inline-flex items-center text-gray-700 hover:text-gray-900">
-              <AiOutlineCalendar size={20} />
-            </Link>
-            <span className="text-sm text-gray-700">Hi, {user.name}</span>
-            <button onClick={onLogout} className="text-sm px-3 py-1 border rounded-md hover:bg-gray-50">Logout</button>
+            {initial && (
+              <button
+                aria-label="Open profile sidebar"
+                onClick={() => setSidebarOpen(true)}
+                className="w-8 h-8 rounded-full bg-gray-900 text-white grid place-items-center text-sm font-semibold cursor-pointer"
+              >
+                {initial}
+              </button>
+            )}
           </>
         )}
+        </div>
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       </div>
     </nav>
   );

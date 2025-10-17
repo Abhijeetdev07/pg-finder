@@ -6,7 +6,7 @@ import { createInquiry } from '../features/inquiries/slice.js';
 import { createBooking, fetchUserBookings } from '../features/bookings/slice.js';
 import { addFavorite, removeFavorite } from '../features/favorites/slice.js';
 import { showToast } from '../features/ui/slice.js';
-import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import { AiOutlineHeart, AiFillHeart, AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import ReviewSection from '../components/ReviewSection.jsx';
 
 export default function PgDetails() {
@@ -98,7 +98,7 @@ export default function PgDetails() {
   if (!pg) return <div className="p-4">Not found</div>;
 
   return (
-    <div className="p-4 max-w-[1200px] mx-auto">
+    <div className="min-h-screen p-2 max-w-[1200px] mx-auto">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold truncate">{pg.title}</h1>
         <button
@@ -113,7 +113,7 @@ export default function PgDetails() {
 
       {Array.isArray(pg.photos) && pg.photos.length > 0 && (
         pg.photos.length >= 5 ? (
-          <div className="mt-3 grid grid-cols-1 md:grid-cols-[50%_50%] gap-3 rounded overflow-hidden">
+          <div className="mt-3 grid grid-cols-1 md:grid-cols-[50%_50%] gap-3 rounded overflow-hidden relative">
             <div>
               <img src={pg.photos[0]} alt={pg.title} className="w-full h-[420px] object-cover rounded" />
             </div>
@@ -122,10 +122,10 @@ export default function PgDetails() {
                 <img key={`${url}-${idx}`} src={url} alt={`${pg.title} ${idx+2}`} className="w-full h-[206px] object-cover rounded" />
               ))}
             </div>
-            <div className="md:col-span-2 flex justify-end">
-              <button onClick={()=>setShowAllPhotos(true)}
-                className="inline-flex items-center gap-2 px-3 py-1 border rounded bg-white/90 hover:bg-white text-sm shadow -mt-10 mr-2">View more photos</button>
-            </div>
+            <button onClick={()=>setShowAllPhotos(true)}
+              className="absolute bottom-3 right-3 inline-flex items-center gap-2 px-3 py-1 border rounded-full bg-white/90 hover:bg-white text-sm shadow">
+              Show all photos
+            </button>
           </div>
         ) : (
           <div className="flex gap-2 mt-3 flex-wrap">
@@ -153,21 +153,44 @@ export default function PgDetails() {
       )}
 
       <div className="mt-3 space-y-1">
+        <p className="mt-5 mb-2 text-lg"><span className="font-semibold">Address:</span> {pg.address}, {pg.city} {pg.college ? `• ${pg.college}` : ''}</p>
         <p className="font-medium">Rent: ₹{pg.rent} <span className="font-normal">/ Deposit: ₹{pg.deposit}</span></p>
-        <p><span className="font-semibold">Address:</span> {pg.address}, {pg.city} {pg.college ? `• ${pg.college}` : ''}</p>
+
+        {/* Guest favourite badge */}
+        <div className="mt-3 mb-5 border rounded-2xl p-3 bg-white flex items-center gap-4 max-w-xl">
+          <div className="flex-1">
+            <div className="font-semibold leading-tight">Guest favourite</div>
+            <p className="text-sm text-gray-600">One of the most loved homes on PG-Hub, according to guests</p>
+          </div>
+          <div className="hidden sm:block h-8 w-px bg-gray-200" />
+          <div className="text-right min-w-[120px]">
+            <div className="text-xl font-bold">{(pg.ratingAvg ?? 0).toFixed(1)}</div>
+            <div className="flex items-center justify-end gap-1">
+              {Array.from({ length: 5 }).map((_, i) => {
+                const filled = i < Math.round(pg.ratingAvg ?? 0);
+                return filled ? (
+                  <AiFillStar key={i} className="text-yellow-400 text-sm" />
+                ) : (
+                  <AiOutlineStar key={i} className="text-gray-300 text-sm" />
+                );
+              })}
+              <span className="text-xs text-gray-500 ml-1">{pg.ratingCount ?? 0} Reviews</span>
+            </div>
+          </div>
+        </div>
         <div className="max-w-2xl">
           <span className="mr-2 font-semibold">Amenities:</span>
           <span className="inline-flex flex-wrap gap-2 align-middle">
             {Array.isArray(pg.amenities) && pg.amenities.length > 0 ? (
               pg.amenities.map((a, idx) => (
-                <span key={`${a}-${idx}`} className="px-2 py-0.5 border rounded text-sm bg-white">
+                <span key={`${a}-${idx}`} className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
                   {a}
                 </span>
               ))
             ) : null}
           </span>
         </div>
-        <p><span className="font-semibold">Gender:</span> {pg.gender}</p>
+        <p className="mt-5"><span className="font-semibold">Gender:</span> {pg.gender}</p>
       </div>
       <div className="mt-3 border rounded p-3 max-w-2xl">
         <div className="font-semibold mb-1">Description:</div>

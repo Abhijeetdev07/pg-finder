@@ -10,13 +10,13 @@ import { useEffect, useState } from 'react';
 export default function Profile() {
   const dispatch = useDispatch();
   const { user, status, error } = useSelector((s) => s.profile);
-  const [form, setForm] = useState({ name: '', phone: '' });
+  const [form, setForm] = useState({ name: '', phone: '', email: '' });
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
 
   useEffect(() => { dispatch(fetchProfile()); }, []);
   useEffect(() => {
-    if (user) setForm({ name: user.name || '', phone: user.phone || '' });
+    if (user) setForm({ name: user.name || '', phone: user.phone || '', email: user.email || '' });
   }, [user]);
 
   const onSubmit = async (e) => {
@@ -50,12 +50,16 @@ export default function Profile() {
                   <div className="text-base">{user.name || '-'}</div>
                 </div>
                 <div>
+                  <div className="text-sm text-gray-600">Email</div>
+                  <div className="text-base">{user.email || '-'}</div>
+                </div>
+                <div>
                   <div className="text-sm text-gray-600">Phone</div>
                   <div className="text-base">{user.phone || '-'}</div>
                 </div>
                 <button
                   type="button"
-                  onClick={()=>{ setEditing(true); setForm({ name: user.name || '', phone: user.phone || '' }); }}
+                  onClick={()=>{ setEditing(true); setForm({ name: user.name || '', phone: user.phone || '', email: user.email || '' }); }}
                   className="absolute right-3 bottom-3 p-2 border rounded hover:bg-gray-50"
                   aria-label="Edit profile"
                   title="Edit"
@@ -68,6 +72,15 @@ export default function Profile() {
                 <label className="grid gap-1">
                   <span className="text-sm">Name</span>
                   <input className="border rounded px-3 h-10" value={form.name} onChange={(e)=>setForm((f)=>({ ...f, name: e.target.value }))} />
+                </label>
+                <label className="grid gap-1">
+                  <span className="text-sm">Email</span>
+                  <input 
+                    type="email"
+                    className="border rounded px-3 h-10" 
+                    value={form.email} 
+                    onChange={(e)=>setForm((f)=>({ ...f, email: e.target.value }))} 
+                  />
                 </label>
                 <label className="grid gap-1">
                   <span className="text-sm">Phone</span>
@@ -84,7 +97,7 @@ export default function Profile() {
                 </label>
                 <div className="flex items-center gap-2">
                   <button type="submit" disabled={saving} className="px-3 py-2 border rounded bg-gray-900 text-white w-max disabled:opacity-60">{saving ? 'Saving…' : 'Save'}</button>
-                  <button type="button" onClick={()=>{ setEditing(false); setForm({ name: user.name || '', phone: user.phone || '' }); }} className="px-3 py-2 border rounded w-max">Cancel</button>
+                  <button type="button" onClick={()=>{ setEditing(false); setForm({ name: user.name || '', phone: user.phone || '', email: user.email || '' }); }} className="px-3 py-2 border rounded w-max">Cancel</button>
                 </div>
               </form>
             )

@@ -107,7 +107,7 @@ export default function PgForm() {
               <label className="grid gap-1">
                 <span className="text-sm">Gender</span>
                 <select className="border rounded px-3 h-10" value={form.gender} onChange={(e)=>onChange('gender', e.target.value)}>
-                  <option value="any">Any</option>
+                  <option value="any"></option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                 </select>
