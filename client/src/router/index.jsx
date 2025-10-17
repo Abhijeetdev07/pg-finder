@@ -47,6 +47,14 @@ export default function AppRouter() {
           }
         />
         <Route
+          path="/bookingSummary"
+          element={
+            <ProtectedRoute>
+              <BookingSummary />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/inquiry/:id"
           element={
             <ProtectedRoute>

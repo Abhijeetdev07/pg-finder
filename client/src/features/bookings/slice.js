@@ -10,6 +10,15 @@ export const createBooking = createAsyncThunk('bookings/create', async ({ pgId, 
   }
 });
 
+export const fetchUserBookings = createAsyncThunk('bookings/fetchUser', async (_payload, thunkApi) => {
+  try {
+    const { data } = await api.get('/api/bookings');
+    return data.data || [];
+  } catch (err) {
+    return thunkApi.rejectWithValue(err?.response?.data?.message || 'Failed to fetch bookings');
+  }
+});
+
 const initialState = {
   items: [],
   status: 'idle',
@@ -42,6 +51,19 @@ const slice = createSlice({
         state.items = [action.payload, ...state.items];
       })
       .addCase(createBooking.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+      .addCase(fetchUserBookings.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchUserBookings.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchUserBookings.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       });

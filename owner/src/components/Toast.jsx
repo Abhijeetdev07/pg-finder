@@ -15,7 +15,7 @@ export default function Toast() {
   if (!toast) return null;
   const isError = toast.type === 'error';
   return (
-    <div className={`fixed right-4 bottom-4 px-3 py-2 rounded-lg shadow ${isError ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+    <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-4 py-3 rounded-lg shadow-lg max-w-md ${isError ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-green-100 text-green-800 border border-green-200'}`}>
       {toast.message}
     </div>
   );

@@ -13,6 +13,19 @@ const reviewSchema = Joi.object({
 export const createReview = asyncHandler(async (req, res) => {
   const { value, error } = reviewSchema.validate(req.body);
   if (error) return res.status(400).json({ message: error.message });
+
+  // Check if user already reviewed this PG
+  const existingReview = await Review.findOne({
+    userId: req.user.id,
+    pgId: value.pgId
+  });
+
+  if (existingReview) {
+    return res.status(409).json({ 
+      message: "You have already reviewed this PG." 
+    });
+  }
+
   const review = await Review.create({ ...value, userId: req.user.id });
 
   // Recompute and update rating average and count on the PG document
@@ -31,6 +44,14 @@ export const createReview = asyncHandler(async (req, res) => {
 export const listReviewsForPg = asyncHandler(async (req, res) => {
   const reviews = await Review.find({ pgId: req.params.id }).sort("-createdAt");
   res.status(200).json({ data: reviews });
+});
+
+export const checkUserReview = asyncHandler(async (req, res) => {
+  const review = await Review.findOne({
+    userId: req.user.id,
+    pgId: req.params.pgId
+  });
+  res.status(200).json({ hasReviewed: !!review, review: review || null });
 });
 
 

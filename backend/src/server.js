@@ -45,7 +45,7 @@ app.use(limiter);
 
 // Health check
 app.get("/health", (_req, res) => {
-  res.send("Backend is working");
+  res.send("I am fine");
 });
 
 // Routes

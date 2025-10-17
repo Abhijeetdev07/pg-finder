@@ -3,10 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../lib/axios.js';
 import { createInquiry } from '../features/inquiries/slice.js';
-import { createBooking } from '../features/bookings/slice.js';
-import { createReview, fetchReviews } from '../features/reviews/slice.js';
+import { createBooking, fetchUserBookings } from '../features/bookings/slice.js';
 import { addFavorite, removeFavorite } from '../features/favorites/slice.js';
+import { showToast } from '../features/ui/slice.js';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import ReviewSection from '../components/ReviewSection.jsx';
 
 export default function PgDetails() {
   const dispatch = useDispatch();
@@ -16,12 +17,16 @@ export default function PgDetails() {
   const [pg, setPg] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const reviews = useSelector((s) => s.reviews.items);
-  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
   const [inquiryMsg, setInquiryMsg] = useState('');
   const [bookingDates, setBookingDates] = useState({ from: '', to: '' });
   const [showAllPhotos, setShowAllPhotos] = useState(false);
   const favorites = useSelector((s) => s.favorites.items);
+  const bookings = useSelector((s) => s.bookings.items);
+  
+  // Check if user has a pending booking for this PG
+  const hasPendingBooking = bookings.some(booking => 
+    booking.pgId === id && booking.status === 'requested'
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -32,7 +37,7 @@ export default function PgDetails() {
         if (!mounted) return;
         setPg(pgRes.data.data);
         setError(null);
-        await dispatch(fetchReviews(id));
+        await dispatch(fetchUserBookings());
       } catch (e) {
         setError(e?.response?.data?.message || 'Failed to load');
       } finally {
@@ -74,22 +79,18 @@ export default function PgDetails() {
     e.preventDefault();
     if (!requireAuth()) return;
     if (!bookingDates.from || !bookingDates.to || bookingDates.from > bookingDates.to) {
-      alert('Please select a valid date range');
+      dispatch(showToast({ type: 'error', message: 'Please select a valid date range' }));
       return;
     }
     const res = await dispatch(createBooking({ pgId: id, dates: bookingDates }));
     if (res.meta.requestStatus === 'fulfilled') {
-      alert('Booking requested');
+      dispatch(showToast({ type: 'success', message: 'Booking requested successfully!' }));
       navigate('/booking/summary');
+    } else if (res.meta.requestStatus === 'rejected') {
+      // Error message is already handled by the axios interceptor and shown via toast
+      // The error message from backend will be displayed
     }
     setBookingDates({ from: '', to: '' });
-  };
-
-  const onAddReview = async (e) => {
-    e.preventDefault();
-    if (!requireAuth()) return;
-    await dispatch(createReview({ pgId: id, rating: Number(reviewForm.rating), comment: reviewForm.comment }));
-    setReviewForm({ rating: 5, comment: '' });
   };
 
   if (loading) return <div className="p-4">Loading...</div>;
@@ -187,30 +188,23 @@ export default function PgDetails() {
 
       <div className="mt-6">
         <h3 className="font-semibold">Book</h3>
-        <form onSubmit={onBook} className="mt-2 flex gap-2 items-center">
-          <input className="border rounded p-2" type="date" value={bookingDates.from} onChange={(e)=>setBookingDates({...bookingDates, from: e.target.value})} required />
-          <input className="border rounded p-2" type="date" value={bookingDates.to} onChange={(e)=>setBookingDates({...bookingDates, to: e.target.value})} required />
-          <button type="submit" className="px-3 py-1 border rounded hover:bg-gray-50">Request Booking</button>
-        </form>
+        {hasPendingBooking ? (
+          <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+            <p className="text-yellow-800 text-sm">
+              <strong>Booking Request Pending:</strong> You already have a pending booking request for this PG. 
+              Please wait for the owner to respond before making another request.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={onBook} className="mt-2 flex gap-2 items-center">
+            <input className="border rounded p-2" type="date" value={bookingDates.from} onChange={(e)=>setBookingDates({...bookingDates, from: e.target.value})} required />
+            <input className="border rounded p-2" type="date" value={bookingDates.to} onChange={(e)=>setBookingDates({...bookingDates, to: e.target.value})} required />
+            <button type="submit" className="px-3 py-1 border rounded hover:bg-gray-50">Request Booking</button>
+          </form>
+        )}
       </div>
 
-      <div className="mt-6">
-        <h3 className="font-semibold">Reviews</h3>
-        <div className="mt-2 space-y-2">
-          {(reviews || []).map((r) => (
-            <div key={r._id} className="text-sm">
-              <strong>{r.rating}/5</strong> {r.comment}
-            </div>
-          ))}
-        </div>
-        <form onSubmit={onAddReview} className="mt-2 flex gap-2 items-center">
-          <select className="border rounded p-2" value={reviewForm.rating} onChange={(e)=>setReviewForm({...reviewForm, rating: e.target.value})}>
-            {[1,2,3,4,5].map((n)=> <option key={n} value={n}>{n}</option>)}
-          </select>
-          <input className="border rounded p-2 flex-1" placeholder="Comment (optional)" value={reviewForm.comment} onChange={(e)=>setReviewForm({...reviewForm, comment: e.target.value})} />
-          <button type="submit" className="px-3 py-1 border rounded hover:bg-gray-50">Add review</button>
-        </form>
-      </div>
+      <ReviewSection pgId={id} />
     </div>
   );
 }
