@@ -16,6 +16,7 @@ export default function PgForm() {
   const { current, status } = useSelector((s) => s.listings);
   const [form, setForm] = useState(empty);
   const [amenitiesText, setAmenitiesText] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isEdit) dispatch(getPgById(id));
@@ -43,18 +44,25 @@ export default function PgForm() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const payload = {
-      ...form,
-      rent: Number(form.rent) || 0,
-      deposit: Number(form.deposit) || 0,
-      roomsAvailable: Number(form.roomsAvailable) || 0,
-    };
-    if (isEdit) {
-      const res = await dispatch(updatePg({ id, updates: payload }));
-      if (res.meta.requestStatus === 'fulfilled') navigate('/listings');
-    } else {
-      const res = await dispatch(createPg(payload));
-      if (res.meta.requestStatus === 'fulfilled') navigate('/listings');
+    setIsSubmitting(true);
+    
+    try {
+      const payload = {
+        ...form,
+        rent: Number(form.rent) || 0,
+        deposit: Number(form.deposit) || 0,
+        roomsAvailable: Number(form.roomsAvailable) || 0,
+      };
+      
+      if (isEdit) {
+        const res = await dispatch(updatePg({ id, updates: payload }));
+        if (res.meta.requestStatus === 'fulfilled') navigate('/listings');
+      } else {
+        const res = await dispatch(createPg(payload));
+        if (res.meta.requestStatus === 'fulfilled') navigate('/listings');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -131,8 +139,21 @@ export default function PgForm() {
               <input type="number" className="border rounded px-3 h-10" value={form.roomsAvailable} onChange={(e)=>onChange('roomsAvailable', e.target.value)} />
             </label>
             <div className="flex gap-2">
-              <button type="submit" disabled={status==='loading'} className="px-3 py-2 border rounded bg-gray-900 text-white">{isEdit ? 'Update' : 'Create'}</button>
-              <button type="button" onClick={()=>navigate('/listings')} className="px-3 py-2 border rounded">Cancel</button>
+              <button 
+                type="submit" 
+                disabled={isSubmitting || status==='loading'} 
+                className="px-3 py-2 border rounded bg-gray-900 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? (isEdit ? 'Updating...' : 'Creating...') : (isEdit ? 'Update' : 'Create')}
+              </button>
+              <button 
+                type="button" 
+                onClick={()=>navigate('/listings')} 
+                disabled={isSubmitting}
+                className="px-3 py-2 border rounded disabled:opacity-50"
+              >
+                Cancel
+              </button>
             </div>
           </form>
         </main>

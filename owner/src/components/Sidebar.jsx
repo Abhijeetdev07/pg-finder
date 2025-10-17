@@ -1,16 +1,38 @@
 import { NavLink } from 'react-router-dom';
+import { 
+  AiOutlineHome, 
+  AiOutlineMessage, 
+  AiOutlineCalendar, 
+  AiOutlineBarChart, 
+  AiOutlineUser 
+} from 'react-icons/ai';
 
 export default function Sidebar() {
-  const link = 'block px-3 py-2 rounded hover:bg-gray-100';
+  const link = 'flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100';
   const active = 'bg-gray-100 font-medium';
   return (
     <aside className="w-56 border-r p-3 hidden md:block">
       <nav className="grid gap-1 text-sm">
-        <NavLink to="/listings" className={({isActive})=>`${link} ${isActive?active:''}`}>Listings</NavLink>
-        <NavLink to="/inquiries" className={({isActive})=>`${link} ${isActive?active:''}`}>Inquiries</NavLink>
-        <NavLink to="/bookings" className={({isActive})=>`${link} ${isActive?active:''}`}>Bookings</NavLink>
-        <NavLink to="/analytics" className={({isActive})=>`${link} ${isActive?active:''}`}>Analytics</NavLink>
-        <NavLink to="/profile" className={({isActive})=>`${link} ${isActive?active:''}`}>Profile</NavLink>
+        <NavLink to="/listings" className={({isActive})=>`${link} ${isActive?active:''}`}>
+          <AiOutlineHome size={18} />
+          Listings
+        </NavLink>
+        <NavLink to="/inquiries" className={({isActive})=>`${link} ${isActive?active:''}`}>
+          <AiOutlineMessage size={18} />
+          Inquiries
+        </NavLink>
+        <NavLink to="/bookings" className={({isActive})=>`${link} ${isActive?active:''}`}>
+          <AiOutlineCalendar size={18} />
+          Bookings
+        </NavLink>
+        <NavLink to="/analytics" className={({isActive})=>`${link} ${isActive?active:''}`}>
+          <AiOutlineBarChart size={18} />
+          Analytics
+        </NavLink>
+        <NavLink to="/profile" className={({isActive})=>`${link} ${isActive?active:''}`}>
+          <AiOutlineUser size={18} />
+          Profile
+        </NavLink>
       </nav>
     </aside>
   );

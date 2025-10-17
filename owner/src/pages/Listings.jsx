@@ -1,18 +1,40 @@
 import OwnerNavbar from '../components/OwnerNavbar.jsx';
 import Sidebar from '../components/Sidebar.jsx';
+import DeleteConfirmModal from '../components/DeleteConfirmModal.jsx';
 import { Link } from 'react-router-dom';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { deletePg, fetchOwnerListings } from '../features/listings/slice.js';
 
 export default function Listings() {
   const dispatch = useDispatch();
   const { items, status, error } = useSelector((s) => s.listings);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, pgId: null, pgTitle: '', isLoading: false });
 
   useEffect(() => {
     dispatch(fetchOwnerListings({ limit: 50 }));
   }, []);
+
+  const handleDeleteClick = (pgId, pgTitle) => {
+    setDeleteModal({ isOpen: true, pgId, pgTitle, isLoading: false });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (deleteModal.pgId) {
+      setDeleteModal(prev => ({ ...prev, isLoading: true }));
+      try {
+        await dispatch(deletePg(deleteModal.pgId));
+        setDeleteModal({ isOpen: false, pgId: null, pgTitle: '', isLoading: false });
+      } catch (error) {
+        setDeleteModal(prev => ({ ...prev, isLoading: false }));
+      }
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ isOpen: false, pgId: null, pgTitle: '', isLoading: false });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -56,7 +78,12 @@ export default function Listings() {
                             <AiOutlineEdit />
                             <span>Edit</span>
                           </Link>
-                          <button onClick={()=>dispatch(deletePg(pg._id))} className="px-2 py-1 border rounded border-red-200 text-red-700 bg-red-50 hover:bg-red-100">Delete</button>
+                          <button 
+                            onClick={()=>handleDeleteClick(pg._id, pg.title)} 
+                            className="px-2 py-1 border rounded border-red-200 text-red-700 bg-red-50 hover:bg-red-100"
+                          >
+                            Delete
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -67,6 +94,16 @@ export default function Listings() {
           )}
         </main>
       </div>
+      
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Listing"
+        description="Are you sure you want to delete listing?"
+        isLoading={deleteModal.isLoading}
+      />
     </div>
   );
 }
