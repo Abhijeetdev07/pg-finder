@@ -1,6 +1,27 @@
 import { Pg } from "../models/Pg.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { cloudinary } from "../config/cloudinary.js";
 import Joi from "joi";
+
+// Helper function to delete images from Cloudinary
+const deleteCloudinaryImages = async (imageUrls) => {
+  if (!imageUrls || imageUrls.length === 0) return;
+  
+  try {
+    const publicIds = imageUrls.map(url => {
+      // Extract public_id from Cloudinary URL
+      const parts = url.split('/');
+      const filename = parts[parts.length - 1];
+      const publicId = filename.split('.')[0];
+      return `pg-hub/${publicId}`;
+    });
+    
+    await cloudinary.api.delete_resources(publicIds);
+    console.log(`Deleted ${publicIds.length} images from Cloudinary`);
+  } catch (error) {
+    console.error('Error deleting images from Cloudinary:', error);
+  }
+};
 
 export const listPgs = asyncHandler(async (req, res) => {
   const {
@@ -83,18 +104,40 @@ export const createPg = asyncHandler(async (req, res) => {
 export const updatePg = asyncHandler(async (req, res) => {
   const { value, error } = pgUpdateSchema.validate(req.body);
   if (error) return res.status(400).json({ message: error.message });
+  
+  // Get the current PG to compare images
+  const currentPg = await Pg.findOne({ _id: req.params.id, ownerId: req.user.id });
+  if (!currentPg) return res.status(404).json({ message: "PG not found" });
+  
+  // Find images that were removed
+  const currentPhotos = currentPg.photos || [];
+  const newPhotos = value.photos || [];
+  const removedPhotos = currentPhotos.filter(photo => !newPhotos.includes(photo));
+  
+  // Update the PG
   const pg = await Pg.findOneAndUpdate(
     { _id: req.params.id, ownerId: req.user.id },
     value,
     { new: true }
   );
-  if (!pg) return res.status(404).json({ message: "PG not found" });
+  
+  // Delete removed images from Cloudinary
+  if (removedPhotos.length > 0) {
+    await deleteCloudinaryImages(removedPhotos);
+  }
+  
   res.status(200).json({ data: pg });
 });
 
 export const deletePg = asyncHandler(async (req, res) => {
   const pg = await Pg.findOneAndDelete({ _id: req.params.id, ownerId: req.user.id });
   if (!pg) return res.status(404).json({ message: "PG not found" });
+  
+  // Delete all images from Cloudinary when PG is deleted
+  if (pg.photos && pg.photos.length > 0) {
+    await deleteCloudinaryImages(pg.photos);
+  }
+  
   res.status(200).json({ message: "PG deleted successfully", id: String(pg._id) });
 });
 
