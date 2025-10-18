@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Uploader from '../components/Uploader.jsx';
 
-const empty = { title:'', description:'', photos:[], rent:'', deposit:'', amenities:[], gender:'any', address:'', city:'', college:'', roomsAvailable:'' };
+const empty = { title:'', description:'', photos:[], rent:'', deposit:'', amenities:[], gender:'co-ed', address:'', city:'', college:'', roomsAvailable:'' };
 
 export default function PgForm() {
   const { id } = useParams();
@@ -31,7 +31,7 @@ export default function PgForm() {
         rent: current.rent ?? '',
         deposit: current.deposit ?? '',
         amenities: current.amenities || [],
-        gender: current.gender || 'any',
+        gender: current.gender || 'co-ed',
         address: current.address || '',
         city: current.city || '',
         college: current.college || '',
@@ -84,10 +84,12 @@ export default function PgForm() {
               <span className="text-sm">Description</span>
               <textarea className="border rounded p-2" value={form.description} onChange={(e)=>onChange('description', e.target.value)} required />
             </label>
+
             <label className="grid gap-1">
               <span className="text-sm">Photos</span>
               <Uploader value={form.photos} onChange={(urls)=>onChange('photos', urls)} />
             </label>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <label className="grid gap-1">
                 <span className="text-sm">Rent</span>
@@ -99,7 +101,7 @@ export default function PgForm() {
               </label>
             </div>
             <label className="grid gap-1">
-              <span className="text-sm">Amenities (comma separated)</span>
+              <span className="text-sm">Facilities (comma separated)</span>
               <input
                 className="border rounded px-3 h-10"
                 value={amenitiesText}
@@ -115,7 +117,7 @@ export default function PgForm() {
               <label className="grid gap-1">
                 <span className="text-sm">Gender</span>
                 <select className="border rounded px-3 h-10" value={form.gender} onChange={(e)=>onChange('gender', e.target.value)}>
-                  <option value="any"></option>
+                  <option value="co-ed">Co-ed</option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                 </select>

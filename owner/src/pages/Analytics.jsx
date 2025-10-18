@@ -2,7 +2,16 @@ import OwnerNavbar from '../components/OwnerNavbar.jsx';
 import Sidebar from '../components/Sidebar.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import { RiRefreshLine } from "react-icons/ri";
 import { fetchAnalytics } from '../features/analytics/slice.js';
+import { 
+  AiOutlineHome, 
+  AiOutlineMessage, 
+  AiOutlineCalendar, 
+  AiOutlineStar,
+  AiOutlineCheckCircle,
+  AiOutlineDollarCircle
+} from 'react-icons/ai';
 
 export default function Analytics() {
   const dispatch = useDispatch();
@@ -14,22 +23,97 @@ export default function Analytics() {
       <OwnerNavbar />
       <div className="mx-auto max-w-7xl flex">
         <Sidebar />
-        <main className="flex-1 p-4">
+        <main className="flex-1 p-4 max-[764px]:ml-0">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-semibold">Analytics</h1>
-            <button onClick={()=>dispatch(fetchAnalytics())} className="px-3 py-1 border rounded">Refresh</button>
+            <button
+              onClick={() => dispatch(fetchAnalytics())}
+              className="px-3 py-1 border rounded transition-all bg-black"
+              aria-label="Refresh analytics"
+              style={{ lineHeight: 0 }} 
+            >
+              <span
+                className={`inline-block transition-transform duration-500 ${
+                  status === 'loading' ? 'animate-spin' : ''
+                }`}
+              > 
+                <RiRefreshLine className="text-white" />
+              </span>
+            </button>
           </div>
           {status==='loading' && <div className="border rounded bg-white p-3 text-sm">Loading…</div>}
           {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}
           {data && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="border rounded p-3 bg-white"><div className="text-sm text-gray-600">Total Listings</div><div className="text-2xl font-semibold">{data.totalListings}</div></div>
-              <div className="border rounded p-3 bg-white"><div className="text-sm text-gray-600">Total Inquiries</div><div className="text-2xl font-semibold">{data.totalInquiries}</div></div>
-              <div className="border rounded p-3 bg-white"><div className="text-sm text-gray-600">Total Bookings</div><div className="text-2xl font-semibold">{data.totalBookings}</div></div>
-              <div className="border rounded p-3 bg-white"><div className="text-sm text-gray-600">Avg Rating</div><div className="text-2xl font-semibold">{(data.avgRating||0).toFixed(2)}</div></div>
-              <div className="border rounded p-3 bg-white"><div className="text-sm text-gray-600">Rating Count</div><div className="text-2xl font-semibold">{data.ratingCount}</div></div>
-              <div className="border rounded p-3 bg-white"><div className="text-sm text-gray-600">Approved Bookings</div><div className="text-2xl font-semibold">{data.approvedBookings}</div></div>
-              <div className="border rounded p-3 bg-white md:col-span-3"><div className="text-sm text-gray-600">Revenue Approx</div><div className="text-2xl font-semibold">₹{data.revenueApprox}</div></div>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Total Listings */}
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs sm:text-sm text-blue-600 font-medium">Total Listings</div>
+                    <div className="text-xl sm:text-3xl font-bold text-blue-800 mt-1">{data.totalListings}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Inquiries */}
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs sm:text-sm text-purple-600 font-medium">Total Inquiries</div>
+                    <div className="text-xl sm:text-3xl font-bold text-purple-800 mt-1">{data.totalInquiries}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Bookings */}
+              <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs sm:text-sm text-green-600 font-medium">Total Bookings</div>
+                    <div className="text-xl sm:text-3xl font-bold text-green-800 mt-1">{data.totalBookings}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Avg Rating */}
+              <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs sm:text-sm text-yellow-600 font-medium">Avg Rating</div>
+                    <div className="text-xl sm:text-3xl font-bold text-yellow-800 mt-1">{(data.avgRating||0).toFixed(2)}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rating Count */}
+              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs sm:text-sm text-indigo-600 font-medium">Rating Count</div>
+                    <div className="text-xl sm:text-3xl font-bold text-indigo-800 mt-1">{data.ratingCount}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Approved Bookings */}
+              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs sm:text-sm text-emerald-600 font-medium">Approved Bookings</div>
+                    <div className="text-xl sm:text-3xl font-bold text-emerald-800 mt-1">{data.approvedBookings}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Revenue Approx */}
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 col-span-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs sm:text-sm text-orange-600 font-medium">Revenue Approx</div>
+                    <div className="text-xl sm:text-3xl font-bold text-orange-800 mt-1">₹{data.revenueApprox}</div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </main>

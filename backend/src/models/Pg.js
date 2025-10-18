@@ -9,7 +9,7 @@ const pgSchema = new mongoose.Schema(
     rent: { type: Number, required: true, index: true },
     deposit: { type: Number, default: 0 },
     amenities: [{ type: String, index: true }],
-    gender: { type: String, enum: ["male", "female", "any"], default: "any", index: true },
+    gender: { type: String, enum: ["male", "female", "co-ed"], default: "co-ed", index: true },
     address: { type: String, required: true },
     city: { type: String, required: true, index: true },
     college: { type: String, index: true },

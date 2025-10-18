@@ -2,7 +2,7 @@ import OwnerNavbar from '../components/OwnerNavbar.jsx';
 import Sidebar from '../components/Sidebar.jsx';
 import DeleteConfirmModal from '../components/DeleteConfirmModal.jsx';
 import { Link } from 'react-router-dom';
-import { AiOutlineEdit } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { deletePg, fetchOwnerListings } from '../features/listings/slice.js';
@@ -41,7 +41,7 @@ export default function Listings() {
       <OwnerNavbar />
       <div className="mx-auto max-w-7xl flex">
         <Sidebar />
-        <main className="flex-1 p-4">
+        <main className="flex-1 p-4 max-[764px]:ml-0">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-semibold">Your Listings</h1>
             <Link to="/listings/new" className="px-3 py-1 border rounded-md bg-gray-900 text-white hover:bg-gray-800">Add PG</Link>
@@ -57,10 +57,10 @@ export default function Listings() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="text-left px-3 py-2">Title</th>
-                    <th className="text-left px-3 py-2">City</th>
-                    <th className="text-left px-3 py-2">Rent</th>
-                    <th className="text-left px-3 py-2">Rooms</th>
-                    <th className="text-left px-3 py-2">Created</th>
+                    <th className="text-left px-3 py-2 max-[900px]:hidden">City</th>
+                    <th className="text-left px-3 py-2 max-[700px]:hidden">Rent</th>
+                    <th className="text-left px-3 py-2 max-[600px]:hidden">Rooms</th>
+                    <th className="text-left px-3 py-2 max-[500px]:hidden">Created</th>
                     <th className="px-3 py-2">Actions</th>
                   </tr>
                 </thead>
@@ -68,21 +68,22 @@ export default function Listings() {
                   {items.map((pg)=> (
                     <tr key={pg._id} className="border-t">
                       <td className="px-3 py-2">{pg.title}</td>
-                      <td className="px-3 py-2">{pg.city}</td>
-                      <td className="px-3 py-2">₹{pg.rent}</td>
-                      <td className="px-3 py-2">{pg.roomsAvailable ?? '-'}</td>
-                      <td className="px-3 py-2">{pg.createdAt ? new Date(pg.createdAt).toLocaleDateString() : '-'}</td>
+                      <td className="px-3 py-2 max-[900px]:hidden">{pg.city}</td>
+                      <td className="px-3 py-2 max-[700px]:hidden">₹{pg.rent}</td>
+                      <td className="px-3 py-2 max-[600px]:hidden">{pg.roomsAvailable ?? '-'}</td>
+                      <td className="px-3 py-2 max-[500px]:hidden">{pg.createdAt ? new Date(pg.createdAt).toLocaleDateString() : '-'}</td>
                       <td className="px-3 py-2">
-                        <div className="flex items-center gap-2 justify-center">
-                          <Link to={`/listings/${pg._id}/edit`} className="px-2 py-1 border rounded flex items-center gap-1">
-                            <AiOutlineEdit />
-                            <span>Edit</span>
+                        <div className="flex items-center gap-1 sm:gap-2 justify-center">
+                          <Link to={`/listings/${pg._id}/edit`} className="px-1 sm:px-2 py-1 border rounded flex items-center gap-1 text-xs sm:text-sm">
+                            <AiOutlineEdit className="max-[400px]:block hidden" size={12} />
+                            <span className="max-[400px]:hidden">Edit</span>
                           </Link>
                           <button 
                             onClick={()=>handleDeleteClick(pg._id, pg.title)} 
-                            className="px-2 py-1 border rounded border-red-200 text-red-700 bg-red-50 hover:bg-red-100"
+                            className="px-1 sm:px-2 py-1 border rounded border-red-200 text-red-700 bg-red-50 hover:bg-red-100 flex items-center gap-1 text-xs sm:text-sm"
                           >
-                            Delete
+                            <AiOutlineDelete className="max-[400px]:block hidden" size={12} />
+                            <span className="max-[400px]:hidden">Delete</span>
                           </button>
                         </div>
                       </td>

@@ -13,8 +13,8 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<Navigate to="/listings" replace />} />
-      <Route path="/dashboard" element={<Navigate to="/listings" replace />} />
+      <Route path="/" element={<Navigate to="/analytics" replace />} />
+      <Route path="/dashboard" element={<Navigate to="/analytics" replace />} />
       <Route path="/listings" element={<ProtectedRoute><Listings /></ProtectedRoute>} />
       <Route path="/listings/new" element={<ProtectedRoute><PgForm /></ProtectedRoute>} />
       <Route path="/listings/:id/edit" element={<ProtectedRoute><PgForm /></ProtectedRoute>} />

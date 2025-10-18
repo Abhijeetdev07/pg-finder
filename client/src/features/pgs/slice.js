@@ -3,19 +3,10 @@ import api from '../../lib/axios.js';
 
 const initialState = {
   filters: {
-    city: '',
-    college: '',
-    minPrice: '',
-    maxPrice: '',
-    amenities: [],
-    gender: 'any',
-    q: '',
-    page: 1,
-    limit: 12,
     sort: '-createdAt',
   },
   results: [],
-  meta: { total: 0, page: 1, limit: 12 },
+  meta: { total: 0 },
   status: 'idle',
   error: null,
 };
@@ -25,12 +16,7 @@ export const fetchPgs = createAsyncThunk('pgs/fetchPgs', async (_payload, thunkA
     const { filters } = thunkApi.getState().pgs;
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
-      if (value === '' || value === null || value === undefined) return;
-      if (Array.isArray(value) && value.length === 0) return;
-      if (Array.isArray(value)) {
-        if (key === 'amenities') params.append(key, value.join(','));
-        else value.forEach((v) => params.append(key, v));
-      } else {
+      if (value !== '' && value !== null && value !== undefined) {
         params.append(key, value);
       }
     });
@@ -47,12 +33,6 @@ const slice = createSlice({
   reducers: {
     setFilters(state, action) {
       state.filters = { ...state.filters, ...action.payload };
-    },
-    resetFilters(state) {
-      state.filters = initialState.filters;
-    },
-    setPage(state, action) {
-      state.filters.page = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -73,7 +53,7 @@ const slice = createSlice({
   },
 });
 
-export const { setFilters, resetFilters, setPage } = slice.actions;
+export const { setFilters } = slice.actions;
 export default slice.reducer;
 
 

@@ -157,7 +157,7 @@ export default function PgDetails() {
         <p className="font-medium">Rent: ₹{pg.rent} <span className="font-normal">/ Deposit: ₹{pg.deposit}</span></p>
 
         {/* Guest favourite badge */}
-        <div className="mt-3 mb-5 border rounded-2xl p-3 bg-white flex items-center gap-4 max-w-xl">
+        {/* <div className="mt-3 mb-5 border rounded-2xl p-3 bg-white flex items-center gap-4 max-w-xl">
           <div className="flex-1">
             <div className="font-semibold leading-tight">Guest favourite</div>
             <p className="text-sm text-gray-600">One of the most loved homes on PG-Hub, according to guests</p>
@@ -177,10 +177,34 @@ export default function PgDetails() {
               <span className="text-xs text-gray-500 ml-1">{pg.ratingCount ?? 0} Reviews</span>
             </div>
           </div>
+        </div> */}
+
+      <div className="mt-3 mb-5 border rounded-2xl p-3 bg-white flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 max-w-xl w-full">
+          <div className="flex-1 text-left">
+          <div className="font-semibold leading-tight text-base sm:text-lg"> Guest favourite</div>
+          <p className="text-sm text-gray-600">One of the most loved homes on PG-Hub, according to guests</p>
+      </div>
+      {/* Divider - hidden on small screens */}
+      <div className="hidden sm:block h-8 w-px bg-gray-200" />
+        <div className="text-left sm:text-right min-w-[120px]">
+          <div className="text-lg sm:text-xl font-bold"> {(pg.ratingAvg ?? 0).toFixed(1)}</div>
+           <div className="flex items-center sm:justify-end justify-start gap-1 flex-wrap">
+            {Array.from({ length: 5 }).map((_, i) => {
+               const filled = i < Math.round(pg.ratingAvg ?? 0);
+               return filled ? (
+                <AiFillStar key={i} className="text-yellow-400 text-sm" />
+              ) : (
+               <AiOutlineStar key={i} className="text-gray-300 text-sm" />
+             );
+             })}
+          <span className="text-xs text-gray-500 ml-1 whitespace-nowrap">{pg.ratingCount ?? 0} Reviews</span>
+         </div>
         </div>
+      </div>
+
         <div className="max-w-2xl">
-          <span className="mr-2 font-semibold">Amenities:</span>
-          <span className="inline-flex flex-wrap gap-2 align-middle">
+          <span className="mr-2 font-semibold">Facilities:</span>
+          <span className="inline-flex flex-wrap gap-2 align-middle mt-2">
             {Array.isArray(pg.amenities) && pg.amenities.length > 0 ? (
               pg.amenities.map((a, idx) => (
                 <span key={`${a}-${idx}`} className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
@@ -197,15 +221,11 @@ export default function PgDetails() {
         <p className="text-gray-700">{pg.description}</p>
       </div>
 
-      
-
-      
-
       <div className="mt-6">
         <h3 className="font-semibold">Send Inquiry</h3>
         <form onSubmit={onSendInquiry} className="mt-2 grid gap-2 max-w-xl">
-          <textarea className="border rounded p-2" placeholder="Your message" value={inquiryMsg} onChange={(e)=>setInquiryMsg(e.target.value)} required />
-          <button type="submit" className="px-3 py-1 border rounded hover:bg-gray-50 w-max">Send</button>
+          <textarea className="border rounded p-2 max-w-[400px]" placeholder="Your message" value={inquiryMsg} onChange={(e)=>setInquiryMsg(e.target.value)} required />
+          <button type="submit" className="px-3 py-1 border rounded hover:bg-black bg-black/90 w-max text-white transition-all ease-in-out duration-300 cursor-pointer">Send</button>
         </form>
       </div>
 
@@ -219,11 +239,19 @@ export default function PgDetails() {
             </p>
           </div>
         ) : (
-          <form onSubmit={onBook} className="mt-2 flex gap-2 items-center">
-            <input className="border rounded p-2" type="date" value={bookingDates.from} onChange={(e)=>setBookingDates({...bookingDates, from: e.target.value})} required />
-            <input className="border rounded p-2" type="date" value={bookingDates.to} onChange={(e)=>setBookingDates({...bookingDates, to: e.target.value})} required />
-            <button type="submit" className="px-3 py-1 border rounded hover:bg-gray-50">Request Booking</button>
+          // <form onSubmit={onBook} className="mt-2 flex gap-2 items-center">
+          //   <input className="border rounded p-2" type="date" value={bookingDates.from} onChange={(e)=>setBookingDates({...bookingDates, from: e.target.value})} required />
+          //   <input className="border rounded p-2" type="date" value={bookingDates.to} onChange={(e)=>setBookingDates({...bookingDates, to: e.target.value})} required />
+          //   <button type="submit" className="px-3 py-1 border rounded hover:bg-gray-50">Request Booking</button>
+          // </form>
+          <form onSubmit={onBook} className="mt-4 flex flex-col sm:flex-row gap-2 sm:gap-3 items-center justify-start w-full max-w-md">
+             <input className="border rounded p-2 text-sm sm:text-base w-full sm:w-auto cursor-pointer"  type="date" value={bookingDates.from} onChange={(e) => setBookingDates({ ...bookingDates, from: e.target.value })} required />
+             <input className="border rounded p-2 text-sm sm:text-base w-full sm:w-auto cursor-pointer" type="date" value={bookingDates.to} onChange={(e) => setBookingDates({ ...bookingDates, to: e.target.value })}  required />
+             <button type="submit" className="px-4 py-2 border rounded bg-black/90 hover:bg-black text-sm sm:text-base text-white cursor-pointer whitespace-nowrap text-left transition-all ease-in-out duration-300">Request Booking </button>
           </form>
+
+
+
         )}
       </div>
 

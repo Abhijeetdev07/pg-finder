@@ -25,36 +25,11 @@ const deleteCloudinaryImages = async (imageUrls) => {
 
 export const listPgs = asyncHandler(async (req, res) => {
   const {
-    city,
-    college,
-    amenities,
-    gender,
-    minPrice,
-    maxPrice,
-    q,
-    page = 1,
-    limit = 12,
     sort = "-createdAt",
   } = req.query;
 
-  const filter = {};
-  if (city) filter.city = city;
-  if (college) filter.college = college;
-  if (gender) filter.gender = gender;
-  if (amenities) filter.amenities = { $all: String(amenities).split(",") };
-  if (minPrice || maxPrice) {
-    filter.rent = {};
-    if (minPrice) filter.rent.$gte = Number(minPrice);
-    if (maxPrice) filter.rent.$lte = Number(maxPrice);
-  }
-  if (q) filter.$text = { $search: q };
-
-  const skip = (Number(page) - 1) * Number(limit);
-  const [items, total] = await Promise.all([
-    Pg.find(filter).sort(sort).skip(skip).limit(Number(limit)),
-    Pg.countDocuments(filter),
-  ]);
-  res.status(200).json({ data: items, meta: { total, page: Number(page), limit: Number(limit) } });
+  const items = await Pg.find({}).sort(sort);
+  res.status(200).json({ data: items, meta: { total: items.length } });
 });
 
 export const getPg = asyncHandler(async (req, res) => {
@@ -71,7 +46,7 @@ const pgBase = Joi.object({
   rent: Joi.number(),
   deposit: Joi.number(),
   amenities: Joi.array().items(Joi.string()),
-  gender: Joi.string().valid("male", "female", "any"),
+  gender: Joi.string().valid("male", "female", "co-ed"),
   address: Joi.string(),
   city: Joi.string(),
   college: Joi.string().allow(""),
@@ -86,7 +61,7 @@ const pgCreateSchema = pgBase
     photos: Joi.array().items(Joi.string()).default([]),
     deposit: Joi.number().default(0),
     amenities: Joi.array().items(Joi.string()).default([]),
-    gender: Joi.string().valid("male", "female", "any").default("any"),
+    gender: Joi.string().valid("male", "female", "co-ed").default("co-ed"),
     location: Joi.object({ lat: Joi.number(), lng: Joi.number() }).default({}),
     roomsAvailable: Joi.number().default(0),
   });

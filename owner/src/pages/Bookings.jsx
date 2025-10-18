@@ -3,12 +3,14 @@ import Sidebar from '../components/Sidebar.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { fetchOwnerBookings, updateBookingStatus } from '../features/bookings/slice.js';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 
 export default function Bookings() {
   const dispatch = useDispatch();
   const { items, status, error } = useSelector((s) => s.bookings);
 
   useEffect(() => { dispatch(fetchOwnerBookings()); }, []);
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <OwnerNavbar />
@@ -27,9 +29,9 @@ export default function Bookings() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="text-left px-3 py-2">PG</th>
-                    <th className="text-left px-3 py-2">User</th>
-                    <th className="text-left px-3 py-2">From</th>
-                    <th className="text-left px-3 py-2">To</th>
+                    <th className="text-left px-3 py-2 max-[1000px]:hidden">User</th>
+                    <th className="text-left px-3 py-2 max-[700px]:hidden">From</th>
+                    <th className="text-left px-3 py-2 max-[700px]:hidden">To</th>
                     <th className="text-left px-3 py-2">Status</th>
                     <th className="px-3 py-2">Actions</th>
                   </tr>
@@ -38,9 +40,9 @@ export default function Bookings() {
                   {items.map((b)=> (
                     <tr key={b._id} className="border-t">
                       <td className="px-3 py-2">{b.pgId?.title || b.pgId}</td>
-                      <td className="px-3 py-2">{b.userId?.email || b.userId}</td>
-                      <td className="px-3 py-2">{b.dates?.from ? new Date(b.dates.from).toLocaleDateString() : '-'}</td>
-                      <td className="px-3 py-2">{b.dates?.to ? new Date(b.dates.to).toLocaleDateString() : '-'}</td>
+                      <td className="px-3 py-2 max-[1000px]:hidden">{b.userId?.email || b.userId}</td>
+                      <td className="px-3 py-2 max-[700px]:hidden">{b.dates?.from ? new Date(b.dates.from).toLocaleDateString() : '-'}</td>
+                      <td className="px-3 py-2 max-[700px]:hidden">{b.dates?.to ? new Date(b.dates.to).toLocaleDateString() : '-'}</td>
                       <td className="px-3 py-2">
                         <span className={
                           b.status === 'approved' ? 'px-2 py-0.5 rounded text-green-800 bg-green-50 border border-green-200'
@@ -52,9 +54,15 @@ export default function Bookings() {
                         </span>
                       </td>
                       <td className="px-3 py-2">
-                        <div className="flex items-center justify-center gap-2">
-                          <button onClick={()=>dispatch(updateBookingStatus({ id: b._id, status: 'approved' }))} className="px-2 py-1 rounded border border-green-200 bg-green-50 text-green-800 hover:bg-green-100">Approve</button>
-                          <button onClick={()=>dispatch(updateBookingStatus({ id: b._id, status: 'rejected' }))} className="px-2 py-1 rounded border border-red-200 bg-red-50 text-red-700 hover:bg-red-100">Reject</button>
+                        <div className="flex items-center justify-center gap-1 sm:gap-2">
+                          <button onClick={()=>dispatch(updateBookingStatus({ id: b._id, status: 'approved' }))} className="px-1 sm:px-2 py-1 rounded border border-green-200 bg-green-50 text-green-800 hover:bg-green-100 text-xs sm:text-sm flex items-center gap-1">
+                            <FaCheck className="max-[400px]:block hidden" size={12} />
+                            <span className="max-[400px]:hidden">Approve</span>
+                          </button>
+                          <button onClick={()=>dispatch(updateBookingStatus({ id: b._id, status: 'rejected' }))} className="px-1 sm:px-2 py-1 rounded border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 text-xs sm:text-sm flex items-center gap-1">
+                            <FaTimes className="max-[400px]:block hidden" size={12} />
+                            <span className="max-[400px]:hidden">Reject</span>
+                          </button>
                         </div>
                       </td>
                     </tr>

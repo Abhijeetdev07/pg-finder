@@ -23,9 +23,14 @@ export default function Profile() {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await dispatch(updateProfile(form));
+      // Only send name and phone, exclude email since it's not editable
+      const updateData = { name: form.name, phone: form.phone };
+      const res = await dispatch(updateProfile(updateData));
       if (res.meta.requestStatus === 'fulfilled') {
-        dispatch(setUser(form));
+        // Update the auth user state with new profile data
+        dispatch(setUser(res.payload.user || { ...form, ...updateData }));
+        // Refresh profile data to get updated info
+        dispatch(fetchProfile());
         dispatch(showToast({ type: 'success', message: 'Profile saved successfully' }));
         setEditing(false);
       }
@@ -77,10 +82,12 @@ export default function Profile() {
                   <span className="text-sm">Email</span>
                   <input 
                     type="email"
-                    className="border rounded px-3 h-10" 
+                    className="border rounded px-3 h-10 bg-gray-100 cursor-not-allowed" 
                     value={form.email} 
-                    onChange={(e)=>setForm((f)=>({ ...f, email: e.target.value }))} 
+                    readOnly
+                    disabled
                   />
+                  <span className="text-xs text-gray-500">Email cannot be changed</span>
                 </label>
                 <label className="grid gap-1">
                   <span className="text-sm">Phone</span>
@@ -107,4 +114,6 @@ export default function Profile() {
     </div>
   );
 }
+
+
 
