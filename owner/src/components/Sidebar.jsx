@@ -11,7 +11,7 @@ export default function Sidebar() {
   const link = 'flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100';
   const active = 'bg-gray-100 font-medium';
   return (
-    <aside className="w-56 border-r p-3 hidden md:block">
+    <aside className="w-56 border-r border-black h-screen p-3 hidden md:block">
       <nav className="grid gap-1 text-sm">
         <NavLink to="/listings" className={({isActive})=>`${link} ${isActive?active:''}`}>
           <AiOutlineHome size={18} />

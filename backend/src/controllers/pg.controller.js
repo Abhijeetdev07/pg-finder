@@ -141,4 +141,22 @@ export const deletePg = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "PG deleted successfully", id: String(pg._id) });
 });
 
+export const listOwnerPgs = asyncHandler(async (req, res) => {
+  const {
+    page = 1,
+    limit = 50,
+    sort = "-createdAt",
+  } = req.query;
+
+  const filter = { ownerId: req.user.id };
+  const skip = (Number(page) - 1) * Number(limit);
+  
+  const [items, total] = await Promise.all([
+    Pg.find(filter).sort(sort).skip(skip).limit(Number(limit)),
+    Pg.countDocuments(filter),
+  ]);
+  
+  res.status(200).json({ data: items, meta: { total, page: Number(page), limit: Number(limit) } });
+});
+
 

@@ -123,7 +123,7 @@ export default function PgDetails() {
               ))}
             </div>
             <button onClick={()=>setShowAllPhotos(true)}
-              className="absolute bottom-3 right-3 inline-flex items-center gap-2 px-3 py-1 border rounded-full bg-white/90 hover:bg-white text-sm shadow">
+              className="absolute bottom-3 right-3 inline-flex items-center gap-2 px-3 py-1 border rounded-full bg-black/90 hover:bg-black/100 text-sm shadow text-white cursor-pointer transition-all duration-300 ease-in-out">
               Show all photos
             </button>
           </div>
@@ -141,7 +141,7 @@ export default function PgDetails() {
           <div className="bg-white rounded shadow max-w-[1200px] w-full max-h-[90vh] overflow-auto p-4" onClick={(e)=>e.stopPropagation()}>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-semibold">All photos</h3>
-              <button className="px-3 py-1 border rounded" onClick={()=>setShowAllPhotos(false)}>Close</button>
+              <button className="px-3 py-1 border rounded hover:bg-gray-50"onClick={()=>setShowAllPhotos(false)}>Close</button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {pg.photos.map((url, idx) => (

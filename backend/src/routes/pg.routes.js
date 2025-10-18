@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { createPg, deletePg, getPg, listPgs, updatePg } from "../controllers/pg.controller.js";
+import { createPg, deletePg, getPg, listPgs, updatePg, listOwnerPgs } from "../controllers/pg.controller.js";
 import { listReviewsForPg } from "../controllers/review.controller.js";
 import { requireAuth, requireOwner } from "../middleware/auth.js";
 
 const router = Router();
 
 router.get("/", listPgs);
+router.get("/my-listings", requireAuth, requireOwner, listOwnerPgs);
 router.get("/:id", getPg);
 router.get("/:id/reviews", listReviewsForPg);
 
