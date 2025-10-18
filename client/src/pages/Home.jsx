@@ -24,7 +24,7 @@ export default function Home() {
 
         {status==='loading' && (
           <div className="flex flex-wrap gap-4 mt-4">
-            {Array.from({ length: PGCard.length }).map((_, i) => <SkeletonCard key={i} />)}
+            {Array.from({ length: results.length}).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         )}
 
