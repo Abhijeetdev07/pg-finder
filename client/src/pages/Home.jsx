@@ -22,33 +22,33 @@ export default function Home() {
       <div className="w-full max-w-[1300px] mx-auto">
         <h1 className="text-xl font-semibold">Find Paying Guests</h1>
 
-        {status==='loading' && (
+        {status === 'loading' ? (
           <div className="flex flex-wrap gap-4 mt-4">
-            {Array.from({ length: results.length}).map((_, i) => <SkeletonCard key={i} />)}
+            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        ) : error ? (
+          <p className="text-red-600 mt-4">{error}</p>
+        ) : (
+          <div className="flex flex-wrap gap-4 mt-4">
+            {results.map((pg)=> {
+              const fav = favorites.some((f)=> f._id === pg._id);
+              return (
+                <PGCard
+                  key={pg._id}
+                  pg={pg}
+                  isFavorite={fav}
+                  onToggleFavorite={(p)=> {
+                    if (!token) {
+                      navigate('/login');
+                      return;
+                    }
+                    dispatch(fav ? removeFavorite(p._id) : addFavorite(p._id));
+                  }}
+                />
+              )
+            })}
           </div>
         )}
-
-        {error && <p className="text-red-600">{error}</p>}
-
-        <div className="flex flex-wrap gap-4 mt-4">
-          {results.map((pg)=> {
-            const fav = favorites.some((f)=> f._id === pg._id);
-            return (
-              <PGCard
-                key={pg._id}
-                pg={pg}
-                isFavorite={fav}
-                onToggleFavorite={(p)=> {
-                  if (!token) {
-                    navigate('/login');
-                    return;
-                  }
-                  dispatch(fav ? removeFavorite(p._id) : addFavorite(p._id));
-                }}
-              />
-            )
-          })}
-        </div>
       </div>
     </main>
   );
