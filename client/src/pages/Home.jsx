@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPgs } from '../features/pgs/slice.js';
 import PGCard from '../components/PGCard.jsx';
@@ -12,10 +12,29 @@ export default function Home() {
   const token = useSelector((s) => s.auth.token);
   const navigate = useNavigate();
   const favorites = useSelector((s) => s.favorites.items);
+  // Get skeleton count from localStorage or use default
+  const getSkeletonCount = () => {
+    const storedCount = localStorage.getItem('pgCount');
+    return storedCount ? parseInt(storedCount, 10) : 6;
+  };
+  
+  const [skeletonCount, setSkeletonCount] = useState(getSkeletonCount());
 
   useEffect(() => {
     dispatch(fetchPgs());
   }, []);
+
+  // Update skeleton count and store in localStorage when results change
+  useEffect(() => {
+    if (results.length > 0) {
+      console.log('Updating skeleton count to:', results.length);
+      setSkeletonCount(results.length);
+      localStorage.setItem('pgCount', results.length.toString());
+    }
+  }, [results.length]);
+
+  // Debug logging
+  console.log('Current state - status:', status, 'results.length:', results.length, 'skeletonCount:', skeletonCount);
 
   return (
     <main className="min-h-screen p-4 flex flex-col">
@@ -24,10 +43,14 @@ export default function Home() {
 
         {status === 'loading' ? (
           <div className="flex flex-wrap gap-4 mt-4">
-            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+            {Array.from({ length: skeletonCount }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : error ? (
           <p className="text-red-600 mt-4">{error}</p>
+        ) : results.length === 0 ? (
+          <div className="text-center py-8 mt-4">
+            <p className="text-gray-500 text-lg">No PGs found</p>
+          </div>
         ) : (
           <div className="flex flex-wrap gap-4 mt-4">
             {results.map((pg)=> {
