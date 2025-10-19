@@ -35,6 +35,12 @@ export const listPgs = asyncHandler(async (req, res) => {
 export const getPg = asyncHandler(async (req, res) => {
   const pg = await Pg.findById(req.params.id);
   if (!pg) return res.status(404).json({ message: "PG not found" });
+  
+  // If user is authenticated and is an owner, check if they own this PG
+  if (req.user && req.user.role === 'owner' && pg.ownerId.toString() !== req.user.id) {
+    return res.status(403).json({ message: "Access denied" });
+  }
+  
   res.status(200).json({ data: pg });
 });
 

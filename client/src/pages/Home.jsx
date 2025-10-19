@@ -63,9 +63,9 @@ export default function Home() {
                   onToggleFavorite={(p)=> {
                     if (!token) {
                       navigate('/login');
-                      return;
+                      return Promise.resolve();
                     }
-                    dispatch(fav ? removeFavorite(p._id) : addFavorite(p._id));
+                    return dispatch(fav ? removeFavorite(p._id) : addFavorite(p._id));
                   }}
                 />
               )

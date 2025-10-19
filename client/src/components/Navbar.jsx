@@ -45,9 +45,13 @@ export default function Navbar() {
                 <Link to="/favorites" aria-label="Favorites" title="Favorites" className="relative inline-flex items-center text-gray-700 hover:text-gray-900 mx-2">
                   <AiOutlineHeart size={28} />
                   {favorites.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
-                      {favorites.length > 99 ? '99+' : favorites.length}
-                    </span>
+                    <>
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
+                        {favorites.length > 99 ? '99+' : favorites.length}
+                      </span>
+                      {/* animated splash/ping behind the badge */}
+                      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500/60 animate-ping" />
+                    </>
                   )}
                 </Link>
                 {initial && (

@@ -45,7 +45,7 @@ export default function Profile() {
         <Sidebar />
         <main className="flex-1 p-4">
           <h1 className="text-xl font-semibold mb-3">Profile</h1>
-          {status==='loading' && <div className="border rounded bg-white p-3 text-sm">Loading…</div>}
+          {status==='loading' && <div className="p-3 text-sm">Loading…</div>}
           {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}
           {user && (
             !editing ? (

@@ -26,22 +26,17 @@ export default function Analytics() {
         <main className="flex-1 p-4 max-[764px]:ml-0">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-semibold">Analytics</h1>
-            <button
-              onClick={() => dispatch(fetchAnalytics())}
-              className="px-3 py-1 border rounded transition-all bg-black"
-              aria-label="Refresh analytics"
-              style={{ lineHeight: 0 }} 
-            >
-              <span
-                className={`inline-block transition-transform duration-500 ${
-                  status === 'loading' ? 'animate-spin' : ''
-                }`}
-              > 
-                <RiRefreshLine className="text-white" />
-              </span>
-            </button>
           </div>
-          {status==='loading' && <div className="border rounded bg-white p-3 text-sm">Loading…</div>}
+          {status==='loading' && (
+            <div className="grid grid-cols-2 gap-4">
+              {Array.from({ length: 6 }).map((_, i)=> (
+                <div key={i} className={`rounded-xl border bg-white p-4 ${i===5 ? 'col-span-2' : ''}`}>
+                  <div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-3" />
+                  <div className="h-8 w-32 bg-gray-200 rounded animate-pulse" />
+                </div>
+              ))}
+            </div>
+          )}
           {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}
           {data && (
             <div className="grid grid-cols-2 gap-4">

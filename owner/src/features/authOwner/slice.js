@@ -3,6 +3,18 @@ import api from '../../lib/axios.js';
 
 const TOKEN_KEY = 'owner_token';
 
+export const register = createAsyncThunk('authOwner/register', async (payload, thunkApi) => {
+  try {
+    const { data } = await api.post('/api/auth/register', { ...payload, role: 'owner' });
+    if (data?.user?.role !== 'owner') {
+      return thunkApi.rejectWithValue('Owner account required');
+    }
+    return data;
+  } catch (err) {
+    return thunkApi.rejectWithValue(err?.response?.data?.message || 'Registration failed');
+  }
+});
+
 export const login = createAsyncThunk('authOwner/login', async (payload, thunkApi) => {
   try {
     const { data } = await api.post('/api/auth/login', payload);
@@ -49,6 +61,14 @@ const slice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(register.pending, (state) => { state.status = 'loading'; state.error = null; })
+      .addCase(register.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        localStorage.setItem(TOKEN_KEY, state.token);
+      })
+      .addCase(register.rejected, (state, action) => { state.status = 'failed'; state.error = action.payload; })
       .addCase(login.pending, (state) => { state.status = 'loading'; state.error = null; })
       .addCase(login.fulfilled, (state, action) => {
         state.status = 'succeeded';

@@ -30,7 +30,16 @@ const slice = createSlice({
       .addCase(fetchInquiries.rejected, (state, action) => { state.status = 'failed'; state.error = action.payload; })
       .addCase(updateInquiryStatus.fulfilled, (state, action) => {
         const updated = action.payload;
-        state.items = state.items.map((it) => it._id === updated._id ? updated : it);
+        // Preserve populated refs (pgId, userId) which backend update doesn't return populated
+        state.items = state.items.map((it) => {
+          if (it._id !== updated._id) return it;
+          return {
+            ...it,
+            ...updated,
+            pgId: it.pgId || updated.pgId,
+            userId: it.userId || updated.userId,
+          };
+        });
       });
   },
 });

@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import Login from '../pages/Login.jsx';
+import Register from '../pages/Register.jsx';
 import Listings from '../pages/Listings.jsx';
 import PgForm from '../pages/PgForm.jsx';
 import Inquiries from '../pages/Inquiries.jsx';
@@ -13,6 +14,7 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route path="/" element={<Navigate to="/analytics" replace />} />
       <Route path="/dashboard" element={<Navigate to="/analytics" replace />} />
       <Route path="/listings" element={<ProtectedRoute><Listings /></ProtectedRoute>} />

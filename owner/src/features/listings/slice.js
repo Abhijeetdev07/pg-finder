@@ -5,18 +5,11 @@ import { showToast } from '../ui/slice.js';
 export const fetchOwnerListings = createAsyncThunk('listings/fetchOwner', async (filters = {}, thunkApi) => {
   try {
     const params = new URLSearchParams();
-    if (filters.city) params.append('city', filters.city);
     if (filters.limit) params.append('limit', String(filters.limit));
     if (filters.page) params.append('page', String(filters.page));
-    const { data } = await api.get(`/api/pgs?${params.toString()}`);
-    let items = data.data || [];
-    if (filters.ownerId) {
-      items = items.filter((it) => {
-        const v = it.ownerId;
-        return v === filters.ownerId || (v && v._id === filters.ownerId) || (typeof v === 'object' && String(v) === filters.ownerId);
-      });
-    }
-    return { items, meta: data.meta };
+    if (filters.sort) params.append('sort', filters.sort);
+    const { data } = await api.get(`/api/pgs/my-listings?${params.toString()}`);
+    return { items: data.data || [], meta: data.meta || { total: 0 } };
   } catch (err) {
     return thunkApi.rejectWithValue(err?.response?.data?.message || 'Failed to load listings');
   }

@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { AiFillHeart, AiOutlineHeart, AiFillStar, AiOutlineStar } from 'react-icons/ai';
 
 export default function PGCard({ pg, isFavorite, onToggleFavorite }) {
   const cover = Array.isArray(pg.photos) && pg.photos.length > 0 ? pg.photos[0] : null;
+  const [isFavLoading, setIsFavLoading] = useState(false);
   
   const renderStars = (rating) => {
     const stars = [];
@@ -33,12 +35,23 @@ export default function PGCard({ pg, isFavorite, onToggleFavorite }) {
       
       {/* Favorite Icon - Top Right */}
       <button 
-        onClick={() => onToggleFavorite(pg)} 
+        onClick={async () => {
+          if (isFavLoading) return;
+          try {
+            setIsFavLoading(true);
+            await (onToggleFavorite?.(pg) || Promise.resolve());
+          } finally {
+            setIsFavLoading(false);
+          }
+        }} 
         aria-label="toggle favorite" 
         title="Toggle favorite" 
-        className="absolute top-2 right-2 p-2 bg-white/90 rounded-full shadow-md hover:bg-white transition-colors z-10"
+        disabled={isFavLoading}
+        className={`absolute top-2 right-2 p-2 bg-white/90 rounded-full shadow-md transition-all z-10 ${isFavLoading ? 'opacity-70' : 'hover:bg-white'}`}
       >
-        {isFavorite ? (
+        {isFavLoading ? (
+          <span className="block h-4 w-4 rounded-full border-2 border-red-500 border-t-transparent animate-spin" />
+        ) : isFavorite ? (
           <AiFillHeart className="text-red-500 text-lg" />
         ) : (
           <AiOutlineHeart className="text-red-500 text-lg" />
