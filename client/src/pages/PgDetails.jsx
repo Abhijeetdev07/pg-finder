@@ -22,6 +22,8 @@ export default function PgDetails() {
   const [showAllPhotos, setShowAllPhotos] = useState(false);
   const favorites = useSelector((s) => s.favorites.items);
   const bookings = useSelector((s) => s.bookings.items);
+  const inquiryStatus = useSelector((s) => s.inquiries.status);
+  const bookingStatus = useSelector((s) => s.bookings.status);
   
   // Check if user has a pending booking for this PG
   const hasPendingBooking = bookings.some(booking => 
@@ -93,7 +95,88 @@ export default function PgDetails() {
     setBookingDates({ from: '', to: '' });
   };
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen p-2 max-w-[1200px] mx-auto">
+        {/* Header skeleton */}
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div className="h-8 bg-gray-200 rounded animate-pulse w-64"></div>
+          <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+        </div>
+        
+        {/* Photos skeleton */}
+        <div className="mt-3 grid grid-cols-1 md:grid-cols-[50%_50%] gap-3 rounded overflow-hidden">
+          <div className="h-[420px] bg-gray-200 rounded animate-pulse"></div>
+          <div className="grid grid-cols-2 gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-[206px] bg-gray-200 rounded animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Content skeleton */}
+        <div className="mt-6 space-y-4">
+          <div className="h-6 bg-gray-200 rounded animate-pulse w-80"></div>
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-64"></div>
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-48"></div>
+          
+          {/* Guest favourite skeleton */}
+          <div className="border rounded-2xl p-3 bg-white">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+              <div className="flex-1">
+                <div className="h-5 bg-gray-200 rounded animate-pulse w-32 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse w-64"></div>
+              </div>
+              <div className="h-8 w-px bg-gray-200 hidden sm:block"></div>
+              <div className="min-w-[120px]">
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-16 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Facilities skeleton */}
+          <div className="max-w-2xl">
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-20 mb-2"></div>
+            <div className="flex gap-2 flex-wrap">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-6 bg-gray-200 rounded-full animate-pulse w-16"></div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Description skeleton */}
+          <div className="border rounded p-3 max-w-2xl">
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-24 mb-2"></div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
+            </div>
+          </div>
+          
+          {/* Forms skeleton */}
+          <div className="space-y-6">
+            <div>
+              <div className="h-5 bg-gray-200 rounded animate-pulse w-24 mb-2"></div>
+              <div className="h-20 bg-gray-200 rounded animate-pulse w-96 mb-2"></div>
+              <div className="h-8 bg-gray-200 rounded animate-pulse w-16"></div>
+            </div>
+            
+            <div>
+              <div className="h-5 bg-gray-200 rounded animate-pulse w-16 mb-2"></div>
+              <div className="flex gap-2">
+                <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
+                <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
+                <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if (error) return <div className="p-4 text-red-600">{error}</div>;
   if (!pg) return <div className="p-4">Not found</div>;
 
@@ -225,7 +308,16 @@ export default function PgDetails() {
         <h3 className="font-semibold">Send Inquiry</h3>
         <form onSubmit={onSendInquiry} className="mt-2 grid gap-2 max-w-xl">
           <textarea className="border rounded p-2 max-w-[400px]" placeholder="Your message" value={inquiryMsg} onChange={(e)=>setInquiryMsg(e.target.value)} required />
-          <button type="submit" className="px-3 py-1 border rounded hover:bg-black bg-black/90 w-max text-white transition-all ease-in-out duration-300 cursor-pointer">Send</button>
+          <button 
+            type="submit" 
+            disabled={inquiryStatus === 'loading'}
+            className="px-3 py-1 border rounded hover:bg-black bg-black/90 w-max text-white transition-all ease-in-out duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {inquiryStatus === 'loading' && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            )}
+            {inquiryStatus === 'loading' ? 'Sending...' : 'Send'}
+          </button>
         </form>
       </div>
 
@@ -247,7 +339,16 @@ export default function PgDetails() {
           <form onSubmit={onBook} className="mt-4 flex flex-col sm:flex-row gap-2 sm:gap-3 items-center justify-start w-full max-w-md">
              <input className="border rounded p-2 text-sm sm:text-base w-full sm:w-auto cursor-pointer"  type="date" value={bookingDates.from} onChange={(e) => setBookingDates({ ...bookingDates, from: e.target.value })} required />
              <input className="border rounded p-2 text-sm sm:text-base w-full sm:w-auto cursor-pointer" type="date" value={bookingDates.to} onChange={(e) => setBookingDates({ ...bookingDates, to: e.target.value })}  required />
-             <button type="submit" className="px-4 py-2 border rounded bg-black/90 hover:bg-black text-sm sm:text-base text-white cursor-pointer whitespace-nowrap text-left transition-all ease-in-out duration-300">Request Booking </button>
+             <button 
+               type="submit" 
+               disabled={bookingStatus === 'loading'}
+               className="px-4 py-2 border rounded bg-black/90 hover:bg-black text-sm sm:text-base text-white cursor-pointer whitespace-nowrap text-left transition-all ease-in-out duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+             >
+               {bookingStatus === 'loading' && (
+                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+               )}
+               {bookingStatus === 'loading' ? 'Requesting...' : 'Request Booking'}
+             </button>
           </form>
 
 

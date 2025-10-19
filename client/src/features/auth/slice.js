@@ -35,6 +35,7 @@ const initialState = {
   token: null,
   status: 'idle', // idle | loading | succeeded | failed
   error: null,
+  isInitializing: false, // for initial auth check on page refresh
 };
 
 const slice = createSlice({
@@ -46,11 +47,15 @@ const slice = createSlice({
       state.token = action.payload.token;
       if (state.token) localStorage.setItem(TOKEN_KEY, state.token);
     },
+    setInitializing(state, action) {
+      state.isInitializing = action.payload;
+    },
     logout(state) {
       state.user = null;
       state.token = null;
       state.status = 'idle';
       state.error = null;
+      state.isInitializing = false;
       localStorage.removeItem(TOKEN_KEY);
     },
   },
@@ -89,20 +94,23 @@ const slice = createSlice({
       .addCase(getMe.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.isInitializing = true;
       })
       .addCase(getMe.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.user = action.payload;
         state.error = null;
+        state.isInitializing = false;
       })
       .addCase(getMe.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || 'Fetch user failed';
+        state.isInitializing = false;
       });
   },
 });
 
-export const { setCredentials, logout } = slice.actions;
+export const { setCredentials, setInitializing, logout } = slice.actions;
 export const selectAuth = (s) => s.auth;
 export const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
 export default slice.reducer;

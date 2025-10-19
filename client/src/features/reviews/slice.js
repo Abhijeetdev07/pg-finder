@@ -50,9 +50,19 @@ const slice = createSlice({
         state.status = 'failed';
         state.error = action.payload;
       })
+      .addCase(createReview.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
       .addCase(createReview.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.error = null;
         // Prepend newest review
         state.items = [action.payload, ...state.items];
+      })
+      .addCase(createReview.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
       });
   },
 });

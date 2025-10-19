@@ -6,7 +6,7 @@ import { AiOutlineHeart } from 'react-icons/ai';
 import Sidebar from './Sidebar.jsx';
 
 export default function Navbar() {
-  const { user } = useSelector(selectAuth);
+  const { user, isInitializing } = useSelector(selectAuth);
   const favorites = useSelector((s) => s.favorites.items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,7 +29,13 @@ export default function Navbar() {
           <Link to="/" className="text-lg font-semibold">PG-Hub</Link>
           
           <div className="ml-auto flex items-center gap-3">
-            {!user ? (
+            {isInitializing ? (
+              // Loading skeleton
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+              </div>
+            ) : !user ? (
               <>
                 <Link to="/login" className="hover:underline">Login</Link>
                 <Link to="/register" className="hover:underline">Register</Link>
