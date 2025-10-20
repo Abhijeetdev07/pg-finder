@@ -10,7 +10,8 @@ export async function connectToDatabase() {
     dbName: process.env.MONGO_DB_NAME || undefined,
   });
   // eslint-disable-next-line no-console
-  console.log("MongoDB connected");
+  console.log("MongoDB connected ✅");
 }
 
 
+ 
