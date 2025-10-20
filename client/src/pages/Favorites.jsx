@@ -15,7 +15,7 @@ export default function Favorites() {
 
   if (status === 'loading') {
     return (
-      <main className="min-h-screen p-4">
+      <main className="h-screen p-4 pt-[70px]">
         <div className="w-full max-w-[1300px] mx-auto">
           <h1 className="text-xl font-semibold">My Favorites</h1>
           <div className="flex flex-wrap gap-4 mt-4">
@@ -28,7 +28,7 @@ export default function Favorites() {
 
   if (error) {
     return (
-      <main className="min-h-screen p-4">
+      <main className="min-h-screen p-4 pt-[70px]">
         <div className="w-full max-w-[1300px] mx-auto">
           <h1 className="text-xl font-semibold">My Favorites</h1>
           <p className="text-red-600 mt-4">{error}</p>
@@ -39,7 +39,7 @@ export default function Favorites() {
   }
 
   return (
-    <main className="min-h-screen p-4">
+    <main className="min-h-screen p-4 pt-[70px]">
       <div className="w-full max-w-[1300px] mx-auto">
         <h1 className="text-xl font-semibold">My Favorites</h1>
 

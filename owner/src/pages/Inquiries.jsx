@@ -13,7 +13,7 @@ export default function Inquiries() {
     dispatch(fetchInquiries());
   }, []);
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-screen bg-gray-50 pt-[52px]">
       <OwnerNavbar />
       <div className="mx-auto max-w-7xl flex">
         <Sidebar />
@@ -25,7 +25,7 @@ export default function Inquiries() {
             <div className="border rounded bg-white p-3 text-sm text-gray-600">No inquiries yet.</div>
           )}
           {items && items.length>0 && (
-            <div className="overflow-x-auto">
+            <div className="overflow-y-auto max-h-[82vh]">
               <table className="min-w-full text-sm bg-white border rounded">
                 <thead className="bg-gray-50">
                   <tr>

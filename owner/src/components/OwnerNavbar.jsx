@@ -12,7 +12,7 @@ export default function OwnerNavbar() {
   };
 
   return (
-    <nav className="border-b bg-white sticky top-0 z-10">
+    <nav className="border-b bg-white fixed top-0 w-full z-10 ">
       <div className="w-full max-w-[1270px] mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/analytics" className="text-lg font-semibold">Dashboard</Link>
         <button 

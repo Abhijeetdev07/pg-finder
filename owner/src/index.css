@@ -1,2 +1,13 @@
 @import "tailwindcss";
 
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.custom-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(197, 8, 8);
+}
+  
+  

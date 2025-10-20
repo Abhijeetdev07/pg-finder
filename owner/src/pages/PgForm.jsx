@@ -69,13 +69,13 @@ export default function PgForm() {
   const onChange = (key, value) => setForm((f) => ({ ...f, [key]: value }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-screen bg-gray-50 pt-[52px]">
       <OwnerNavbar />
       <div className="mx-auto max-w-7xl flex">
         <Sidebar />
         <main className="flex-1 p-4">
           <h1 className="text-xl font-semibold mb-3">{isEdit ? 'Edit PG' : 'Add PG'}</h1>
-          <form onSubmit={onSubmit} className="grid gap-3 bg-white border rounded p-4 max-w-3xl">
+          <form onSubmit={onSubmit} className="grid gap-3 bg-white border rounded p-4 max-w-3xl overflow-y-auto max-h-[82vh] border">
             <label className="grid gap-1">
               <span className="text-sm">Title</span>
               <input className="border rounded px-3 h-10" value={form.title} onChange={(e)=>onChange('title', e.target.value)} required />

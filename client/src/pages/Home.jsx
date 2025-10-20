@@ -37,7 +37,7 @@ export default function Home() {
   console.log('Current state - status:', status, 'results.length:', results.length, 'skeletonCount:', skeletonCount);
 
   return (
-    <main className="min-h-screen p-4 flex flex-col">
+    <main className="min-h-screen p-4 flex flex-col bg-gray-200 pt-[70px]">
       <div className="w-full max-w-[1300px] mx-auto">
         <h1 className="text-xl font-semibold">Find Paying Guests</h1>
 

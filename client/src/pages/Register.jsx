@@ -18,7 +18,7 @@ export default function Register() {
   };
 
   return (
-    <main className="min-h-screen grid place-items-center p-4">
+    <main className="min-h-screen grid place-items-center">
       <div className="w-full max-w-[480px] bg-white border rounded-xl shadow-md p-6">
         <h1 className="text-2xl font-bold mb-4 text-center">Create account</h1>
         <p className="text-gray-500 mb-5 text-center">Join PG-Hub</p>

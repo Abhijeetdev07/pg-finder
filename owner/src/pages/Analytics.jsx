@@ -19,7 +19,7 @@ export default function Analytics() {
 
   useEffect(() => { dispatch(fetchAnalytics()); }, []);
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50 pt-[52px] h-screen">
       <OwnerNavbar />
       <div className="mx-auto max-w-7xl flex">
         <Sidebar />

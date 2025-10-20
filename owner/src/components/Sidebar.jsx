@@ -11,7 +11,7 @@ export default function Sidebar() {
   const link = 'flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-100';
   const active = 'bg-gray-100 font-medium';
   return (
-    <aside className="w-56 max-[764px]:w-16 border-r border-black h-screen p-3">
+    <aside className="w-56 max-[764px]:w-16 border-r border-black p-3">
       <nav className="grid gap-1 text-sm">
         <NavLink to="/analytics" className={({isActive})=>`${link} ${isActive?active:''}`}>
           <AiOutlineBarChart size={18} />

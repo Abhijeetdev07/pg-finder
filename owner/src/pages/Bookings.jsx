@@ -12,7 +12,7 @@ export default function Bookings() {
   useEffect(() => { dispatch(fetchOwnerBookings()); }, []);
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-screen bg-gray-50 pt-[52px]">
       <OwnerNavbar />
       <div className="mx-auto max-w-7xl flex">
         <Sidebar />
@@ -24,7 +24,7 @@ export default function Bookings() {
             <div className="border rounded bg-white p-3 text-sm text-gray-600">No bookings yet.</div>
           )}
           {items && items.length>0 && (
-            <div className="overflow-x-auto">
+            <div className="overflow-y-auto max-h-[82vh]">
               <table className="min-w-full text-sm bg-white border rounded">
                 <thead className="bg-gray-50">
                   <tr>

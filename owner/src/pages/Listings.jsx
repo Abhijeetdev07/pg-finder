@@ -37,7 +37,7 @@ export default function Listings() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-screen bg-gray-50 pt-[52px] overflow-y-hidden">
       <OwnerNavbar />
       <div className="mx-auto max-w-7xl flex">
         <Sidebar />
@@ -52,8 +52,9 @@ export default function Listings() {
             <div className="border rounded bg-white p-3 text-sm text-gray-600">No listings yet. Click "Add PG" to create your first listing.</div>
           )}
           {items && items.length>0 && (
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm bg-white border rounded">
+            // <div className="overflow-x-auto">
+            <div className=" overflow-y-auto max-h-[82vh] border custom-scroll">
+               <table className="min-w-full text-sm bg-white">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="text-left px-3 py-2">Title</th>

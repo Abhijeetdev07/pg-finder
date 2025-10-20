@@ -5,7 +5,7 @@ export function Skeleton({ width = '100%', height = 16, className = '' }) {
 
 export function SkeletonCard() {
   return (
-    <div className="border rounded-lg overflow-hidden w-[280px] bg-white shadow-sm">
+    <div className="border rounded-3xl overflow-hidden w-[280px] h-[320px] bg-white shadow-sm">
       <div className="w-full h-40 bg-gray-200 animate-pulse" />
       <div className="p-3 space-y-2">
         <Skeleton width="70%" height={20} className="mb-2" />

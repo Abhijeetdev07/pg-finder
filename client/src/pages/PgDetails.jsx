@@ -7,6 +7,8 @@ import { createBooking, fetchUserBookings } from '../features/bookings/slice.js'
 import { addFavorite, removeFavorite } from '../features/favorites/slice.js';
 import { showToast } from '../features/ui/slice.js';
 import { AiOutlineHeart, AiFillHeart, AiFillStar, AiOutlineStar } from 'react-icons/ai';
+import { BiSolidGrid } from "react-icons/bi";
+import HeartBorderSpinner from '../components/Heartload.jsx';
 import ReviewSection from '../components/ReviewSection.jsx';
 
 export default function PgDetails() {
@@ -20,6 +22,7 @@ export default function PgDetails() {
   const [inquiryMsg, setInquiryMsg] = useState('');
   const [bookingDates, setBookingDates] = useState({ from: '', to: '' });
   const [showAllPhotos, setShowAllPhotos] = useState(false);
+  const [isFavLoading, setIsFavLoading] = useState(false);
   const favorites = useSelector((s) => s.favorites.items);
   const bookings = useSelector((s) => s.bookings.items);
   const inquiryStatus = useSelector((s) => s.inquiries.status);
@@ -62,10 +65,16 @@ export default function PgDetails() {
   const onToggleFavorite = async () => {
     if (!requireAuth()) return;
     const isFav = favorites.some((f) => f._id === id);
-    if (isFav) {
-      await dispatch(removeFavorite(id));
-    } else {
-      await dispatch(addFavorite(id));
+    if (isFavLoading) return;
+    try {
+      setIsFavLoading(true);
+      if (isFav) {
+        await dispatch(removeFavorite(id));
+      } else {
+        await dispatch(addFavorite(id));
+      }
+    } finally {
+      setIsFavLoading(false);
     }
   };
 
@@ -181,16 +190,23 @@ export default function PgDetails() {
   if (!pg) return <div className="p-4">Not found</div>;
 
   return (
-    <div className="min-h-screen p-2 max-w-[1200px] mx-auto">
+    <div className="min-h-screen p-2 max-w-[1200px] mx-auto pt-[70px]">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold truncate">{pg.title}</h1>
         <button
           onClick={onToggleFavorite}
-          className="p-2 bg-white rounded-full border shadow mr-5"
+          className="h-8 w-8 bg-white rounded-full border shadow mr-5 flex items-center justify-center disabled:opacity-60"
           aria-label="Toggle favorite"
           title={favorites.some((f)=> f._id === id) ? 'Remove from favorites' : 'Add to favorites'}
+          disabled={isFavLoading}
         >
-          {favorites.some((f)=> f._id === id) ? <AiFillHeart className="text-red-600" /> : <AiOutlineHeart />}
+          {isFavLoading ? (
+            <HeartBorderSpinner size={16} color="#ef4444" strokeWidth={2} className="align-middle" />
+          ) : favorites.some((f)=> f._id === id) ? (
+            <AiFillHeart className="text-red-600" />
+          ) : (
+            <AiOutlineHeart />
+          )}
         </button>
       </div>
 
@@ -207,7 +223,7 @@ export default function PgDetails() {
             </div>
             <button onClick={()=>setShowAllPhotos(true)}
               className="absolute bottom-3 right-3 inline-flex items-center gap-2 px-3 py-1 border rounded-full bg-black/90 hover:bg-black/100 text-sm shadow text-white cursor-pointer transition-all duration-300 ease-in-out">
-              Show all photos
+              <BiSolidGrid/> <span>Show all photos</span>
             </button>
           </div>
         ) : (
@@ -238,29 +254,6 @@ export default function PgDetails() {
       <div className="mt-3 space-y-1">
         <p className="mt-5 mb-2 text-lg"><span className="font-semibold">Address:</span> {pg.address}, {pg.city} {pg.college ? `• ${pg.college}` : ''}</p>
         <p className="font-medium">Rent: ₹{pg.rent} <span className="font-normal">/ Deposit: ₹{pg.deposit}</span></p>
-
-        {/* Guest favourite badge */}
-        {/* <div className="mt-3 mb-5 border rounded-2xl p-3 bg-white flex items-center gap-4 max-w-xl">
-          <div className="flex-1">
-            <div className="font-semibold leading-tight">Guest favourite</div>
-            <p className="text-sm text-gray-600">One of the most loved homes on PG-Hub, according to guests</p>
-          </div>
-          <div className="hidden sm:block h-8 w-px bg-gray-200" />
-          <div className="text-right min-w-[120px]">
-            <div className="text-xl font-bold">{(pg.ratingAvg ?? 0).toFixed(1)}</div>
-            <div className="flex items-center justify-end gap-1">
-              {Array.from({ length: 5 }).map((_, i) => {
-                const filled = i < Math.round(pg.ratingAvg ?? 0);
-                return filled ? (
-                  <AiFillStar key={i} className="text-yellow-400 text-sm" />
-                ) : (
-                  <AiOutlineStar key={i} className="text-gray-300 text-sm" />
-                );
-              })}
-              <span className="text-xs text-gray-500 ml-1">{pg.ratingCount ?? 0} Reviews</span>
-            </div>
-          </div>
-        </div> */}
 
       <div className="mt-3 mb-5 border rounded-2xl p-3 bg-white flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 max-w-xl w-full">
           <div className="flex-1 text-left">

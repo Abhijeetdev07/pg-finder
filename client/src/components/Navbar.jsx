@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
+import Heartload from './Heartload.jsx';
 import { logout, selectAuth } from '../features/auth/slice.js';
 import { AiOutlineHeart } from 'react-icons/ai';
 import Sidebar from './Sidebar.jsx';
@@ -24,7 +25,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-white border-b">
+      <nav className="fixed top-0 w-full z-50 backdrop-blur-md border">
         <div className="w-full max-w-[1300px] mx-auto flex items-center gap-3 p-3">
           <Link to="/" className="text-lg font-semibold">PG-Hub</Link>
           
@@ -46,8 +47,12 @@ export default function Navbar() {
                   <AiOutlineHeart size={28} />
                   {favorites.length > 0 && (
                     <>
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
-                        {favorites.length > 99 ? '99+' : favorites.length}
+                      <span
+                        className={`absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 flex items-center justify-center font-medium ${
+                          favorites.length > 10 ? "w-5" : "w-4"
+                        }`}
+                      >
+                        {favorites.length > 10 ? '10+ ' : favorites.length}
                       </span>
                       {/* animated splash/ping behind the badge */}
                       <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500/60 animate-ping" />

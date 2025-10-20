@@ -12,18 +12,18 @@ export default function BookingSummary() {
   }, [dispatch]);
 
   if (status === 'loading') return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen p-4 pt-[70px]">
       <div className="w-full max-w-[1300px] mx-auto">Loading bookings...</div>
     </div>
   );
   if (error) return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen p-4 pt-[70px]">
       <div className="w-full max-w-[1300px] mx-auto text-red-600">Error: {error}</div>
     </div>
   );
   if (!bookings || bookings.length === 0) {
     return (
-      <div className="min-h-screen p-4">
+      <div className="min-h-screen p-4 pt-[70px]">
         <div className="w-full max-w-[1300px] mx-auto">
           <h1 className="text-xl font-semibold mb-4">My Bookings</h1>
           <p>No bookings found.</p>
@@ -34,7 +34,7 @@ export default function BookingSummary() {
   }
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen p-4 pt-[70px]">
       <div className="w-full max-w-[1300px] mx-auto">
         <h1 className="text-xl font-semibold mb-4">My Bookings</h1>
         <div className="space-y-4">
