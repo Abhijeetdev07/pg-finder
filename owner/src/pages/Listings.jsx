@@ -13,8 +13,12 @@ export default function Listings() {
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, pgId: null, pgTitle: '', isLoading: false });
 
   useEffect(() => {
-    dispatch(fetchOwnerListings({ limit: 50 }));
-  }, []);
+    if (status === 'idle') {
+      dispatch(fetchOwnerListings({ limit: 50 }));
+    }
+  }, [status, dispatch]);
+
+  const isLoading = status === 'loading' && (!items || items.length === 0);
 
   const handleDeleteClick = (pgId, pgTitle) => {
     setDeleteModal({ isOpen: true, pgId, pgTitle, isLoading: false });
@@ -46,7 +50,7 @@ export default function Listings() {
             <h1 className="text-xl font-semibold">Your Listings</h1>
             <Link to="/listings/new" className="px-3 py-1 border rounded-md bg-gray-900 text-white hover:bg-gray-800">Add New PG</Link>
           </div>
-          {status==='loading' && <div className="p-3 text-sm">Loading…</div>}
+          {isLoading && <div className="p-3 text-sm">Loading…</div>}
           {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}
           {(!items || items.length===0) && status!=='loading' && (
             <div className="border rounded bg-white p-3 text-sm text-gray-600">No listings yet. Click "Add PG" to create your first listing.</div>

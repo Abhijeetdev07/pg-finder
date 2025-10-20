@@ -10,8 +10,11 @@ export default function Inquiries() {
   const { items, status, error } = useSelector((s) => s.inquiries);
 
   useEffect(() => {
-    dispatch(fetchInquiries());
-  }, []);
+    if (status === 'idle') {
+      dispatch(fetchInquiries());
+    }
+  }, [status, dispatch]);
+  const isLoading = status === 'loading' && (!items || items.length === 0);
   return (
     <div className="h-screen bg-gray-50 pt-[52px]">
       <OwnerNavbar />
@@ -19,7 +22,7 @@ export default function Inquiries() {
         <Sidebar />
         <main className="flex-1 p-4 max-[764px]:ml-0">
           <h1 className="text-xl font-semibold mb-3">Inquiries</h1>
-          {status==='loading' && <div className="p-3 text-sm">Loading…</div>}
+          {isLoading && <div className="p-3 text-sm">Loading…</div>}
           {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}
           {(!items || items.length===0) && status!=='loading' && (
             <div className="border rounded bg-white p-3 text-sm text-gray-600">No inquiries yet.</div>

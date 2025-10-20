@@ -14,10 +14,17 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
 
-  useEffect(() => { dispatch(fetchProfile()); }, []);
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchProfile());
+    }
+  }, [status, dispatch]);
+  
   useEffect(() => {
     if (user) setForm({ name: user.name || '', phone: user.phone || '', email: user.email || '' });
   }, [user]);
+
+  const isLoading = status === 'loading' && !user;
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +52,7 @@ export default function Profile() {
         <Sidebar />
         <main className="flex-1 p-4">
           <h1 className="text-xl font-semibold mb-3">Profile</h1>
-          {status==='loading' && <div className="p-3 text-sm">Loading…</div>}
+          {isLoading && <div className="p-3 text-sm">Loading…</div>}
           {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}
           {user && (
             !editing ? (
