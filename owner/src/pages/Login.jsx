@@ -11,10 +11,11 @@ export default function Login() {
   const status = useSelector((s) => s.authOwner.status);
   const error = useSelector((s) => s.authOwner.error);
   const [form, setForm] = useState({ email: '', password: '' });
+  const [showPwd, setShowPwd] = useState(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const res = await dispatch(login(form));
+    const res = await dispatch(login({ email: form.email, password: form.password }));
     if (res.meta.requestStatus === 'fulfilled') {
       const to = location.state?.from?.pathname || '/dashboard';
       navigate(to, { replace: true });
@@ -51,7 +52,7 @@ export default function Login() {
             <div className="relative">
               <input 
                 className="w-full h-10 pr-10 pl-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
-                type={form._showPwd ? 'text' : 'password'} 
+                type={showPwd ? 'text' : 'password'} 
                 value={form.password} 
                 onChange={(e) => setForm({...form, password: e.target.value})} 
                 required 
@@ -59,11 +60,11 @@ export default function Login() {
               />
               <button
                 type="button"
-                aria-label={form._showPwd ? 'Hide password' : 'Show password'}
-                onClick={() => setForm((f) => ({ ...f, _showPwd: !f._showPwd }))}
+                aria-label={showPwd ? 'Hide password' : 'Show password'}
+                onClick={() => setShowPwd((v) => !v)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-600 hover:text-gray-800"
               >
-                {form._showPwd ? <AiOutlineEyeInvisible size={18} /> : <AiOutlineEye size={18} />}
+                {showPwd ? <AiOutlineEyeInvisible size={18} /> : <AiOutlineEye size={18} />}
               </button>
             </div>
           </div>
