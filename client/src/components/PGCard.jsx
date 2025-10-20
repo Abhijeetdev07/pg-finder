@@ -139,7 +139,7 @@ export default function PGCard({ pg, isFavorite, onToggleFavorite }) {
         aria-label="toggle favorite"
         title="Toggle favorite"
         disabled={isFavLoading}
-        className={`absolute top-2 right-2 h-8 w-8 bg-white/90 rounded-full shadow-md transition-all z-10 flex items-center justify-center leading-none ${
+        className={`absolute top-2 right-2 h-8 w-8 bg-white rounded-full shadow-md transition-all z-10 flex items-center justify-center leading-none ${
           isFavLoading ? 'opacity-100' : 'hover:bg-white'
         }`}
       >
