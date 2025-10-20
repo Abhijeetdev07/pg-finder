@@ -1,5 +1,4 @@
 import OwnerNavbar from '../components/OwnerNavbar.jsx';
-import LoadingAnimation from '../components/Loadinganimation.jsx';
 import Sidebar from '../components/Sidebar.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
@@ -19,7 +18,7 @@ export default function Bookings() {
         <Sidebar />
         <main className="flex-1 p-4">
           <h1 className="text-xl font-semibold mb-3">Bookings</h1>
-          {status==='loading' && <div className="p-3 text-sm"><LoadingAnimation/></div>}
+          {status==='loading' && <div className="p-3 text-sm">loading...</div>}
           {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}
           {(!items || items.length===0) && status!=='loading' && (
             <div className="border rounded bg-white p-3 text-sm text-gray-600">No bookings yet.</div>
