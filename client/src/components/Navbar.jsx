@@ -1,7 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
-import Heartload from './Heartload.jsx';
 import { logout, selectAuth } from '../features/auth/slice.js';
 import { AiOutlineHeart } from 'react-icons/ai';
 import Sidebar from './Sidebar.jsx';
@@ -14,7 +13,7 @@ export default function Navbar() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
+  //const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
 
   const onLogout = () => {
     dispatch(logout());
@@ -49,10 +48,10 @@ export default function Navbar() {
                     <>
                       <span
                         className={`absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 flex items-center justify-center font-medium ${
-                          favorites.length > 10 ? "w-5" : "w-4"
+                          favorites.length > 10 ? "w-6 -right-3" : "w-4"
                         }`}
                       >
-                        {favorites.length > 10 ? '10+ ' : favorites.length}
+                        {favorites.length > 10 ? '10+' : favorites.length}
                       </span>
                       {/* animated splash/ping behind the badge */}
                       <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500/60 animate-ping" />

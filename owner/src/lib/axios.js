@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL });
+const resolvedBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+if (!import.meta.env.VITE_API_URL) {
+  // eslint-disable-next-line no-console
+  console.warn('[OWNER API] VITE_API_URL not set; defaulting to', resolvedBaseUrl);
+}
+
+const api = axios.create({ baseURL: resolvedBaseUrl, withCredentials: false });
 
 function getToken() {
   try { return localStorage.getItem('owner_token'); } catch { return null; }
