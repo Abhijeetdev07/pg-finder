@@ -17,7 +17,14 @@ export default function Analytics() {
   const dispatch = useDispatch();
   const { data, status, error } = useSelector((s) => s.analytics);
 
-  useEffect(() => { dispatch(fetchAnalytics()); }, []);
+  useEffect(() => {
+    // Avoid duplicate fetches in StrictMode by only fetching from idle state
+    if (status === 'idle') {
+      dispatch(fetchAnalytics());
+    }
+  }, [status, dispatch]);
+
+  const isLoading = status === 'loading' && !data;
   return (
     <div className="bg-gray-50 pt-[52px] h-screen">
       <OwnerNavbar />
@@ -27,7 +34,7 @@ export default function Analytics() {
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-semibold">Analytics</h1>
           </div>
-          {status==='loading' && (
+          {isLoading && (
             <div className="grid grid-cols-2 gap-4">
               {Array.from({ length: 6 }).map((_, i)=> (
                 <div key={i} className={`rounded-xl border bg-white p-4 ${i===5 ? 'col-span-2' : ''}`}>
