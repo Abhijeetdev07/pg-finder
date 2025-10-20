@@ -15,7 +15,7 @@ export default function HeartBorderSpinner({
   size = 64,
   color = "#ef4444",
   strokeWidth = 2,
-  speed = 1.6,
+  speed = 0.6,
   className = "",
 }) {
   const sizeValue = typeof size === "number" ? `${size}px` : size;
