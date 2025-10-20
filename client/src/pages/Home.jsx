@@ -27,14 +27,14 @@ export default function Home() {
   // Update skeleton count and store in localStorage when results change
   useEffect(() => {
     if (results.length > 0) {
-      console.log('Updating skeleton count to:', results.length);
+      //console.log('Updating skeleton count to:', results.length);
       setSkeletonCount(results.length);
       localStorage.setItem('pgCount', results.length.toString());
     }
   }, [results.length]);
 
   // Debug logging
-  console.log('Current state - status:', status, 'results.length:', results.length, 'skeletonCount:', skeletonCount);
+  //console.log('Current state - status:', status, 'results.length:', results.length, 'skeletonCount:', skeletonCount);
 
   return (
     <main className="min-h-screen p-4 flex flex-col bg-gray-200 pt-[70px]">
