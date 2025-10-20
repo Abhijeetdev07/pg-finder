@@ -63,29 +63,20 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 8080;
-const isVercel = Boolean(process.env.VERCEL);
 
-// Start server (local/Render). On Vercel, export app and connect DB without listening.
-if (!isVercel) {
-  connectToDatabase()
-    .then(() => {
-      app.listen(PORT, () => {
-        // eslint-disable-next-line no-console
-        console.log(`Server listening on port ${PORT}`);
-      });
-    })
-    .catch((err) => {
+// Start server after DB connects
+connectToDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
       // eslint-disable-next-line no-console
-      console.error("Failed to connect to database", err);
-      process.exit(1);
+      console.log(`Server listening on port ${PORT}`);
     });
-} else {
-  // Vercel serverless cold start: ensure DB connection is initiated
-  connectToDatabase().catch((err) => {
+  })
+  .catch((err) => {
     // eslint-disable-next-line no-console
-    console.error("DB connect failed on Vercel", err);
+    console.error("Failed to connect to database", err);
+    process.exit(1);
   });
-}
 
 export default app;
 
