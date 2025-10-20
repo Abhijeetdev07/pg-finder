@@ -140,7 +140,7 @@ export default function PGCard({ pg, isFavorite, onToggleFavorite }) {
         title="Toggle favorite"
         disabled={isFavLoading}
         className={`absolute top-2 right-2 h-8 w-8 bg-white/90 rounded-full shadow-md transition-all z-10 flex items-center justify-center leading-none ${
-          isFavLoading ? 'opacity-70' : 'hover:bg-white'
+          isFavLoading ? 'opacity-100' : 'hover:bg-white'
         }`}
       >
         {isFavLoading ? (
