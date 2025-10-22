@@ -46,9 +46,14 @@ export default function Listings() {
       <div className="mx-auto max-w-7xl flex">
         <Sidebar />
         <main className="flex-1 p-4 max-[764px]:ml-0">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-semibold">Your Listings</h1>
-            <Link to="/listings/new" className="px-3 py-1 border rounded-md bg-gray-900 text-white hover:bg-gray-800">Add New PG</Link>
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Your Listings</h1>
+                <p className="text-sm text-gray-600 mt-1">Manage all your PG properties</p>
+              </div>
+              <Link to="/listings/new" className="px-3 py-1 border rounded-md bg-gray-900 text-white hover:bg-gray-800">Add New PG</Link>
+            </div>
           </div>
           {isLoading && <div className="p-3 text-sm">Loading…</div>}
           {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}

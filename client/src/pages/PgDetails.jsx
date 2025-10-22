@@ -23,6 +23,7 @@ export default function PgDetails() {
   const [bookingDates, setBookingDates] = useState({ from: '', to: '' });
   const [showAllPhotos, setShowAllPhotos] = useState(false);
   const [isFavLoading, setIsFavLoading] = useState(false);
+  const [existingBookings, setExistingBookings] = useState([]);
   const favorites = useSelector((s) => s.favorites.items);
   const bookings = useSelector((s) => s.bookings.items);
   const inquiryStatus = useSelector((s) => s.inquiries.status);
@@ -38,9 +39,13 @@ export default function PgDetails() {
     (async () => {
       try {
         setLoading(true);
-        const pgRes = await api.get(`/api/pgs/${id}`);
+        const [pgRes, bookingsRes] = await Promise.all([
+          api.get(`/api/pgs/${id}`),
+          api.get(`/api/bookings/pg/${id}`)
+        ]);
         if (!mounted) return;
         setPg(pgRes.data.data);
+        setExistingBookings(bookingsRes.data.data || []);
         setError(null);
         await dispatch(fetchUserBookings());
       } catch (e) {
@@ -53,6 +58,42 @@ export default function PgDetails() {
   }, [id]);
 
   // Map removed (no location fields)
+
+  // Get today's date in YYYY-MM-DD format
+  const getToday = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
+  // Check if a date is disabled (past date or conflicts with existing bookings)
+  const isDateDisabled = (date) => {
+    const today = getToday();
+    if (date < today) return true;
+
+    // Check for conflicts with existing bookings
+    const selectedDate = new Date(date);
+    return existingBookings.some(booking => {
+      const fromDate = new Date(booking.dates.from);
+      const toDate = new Date(booking.dates.to);
+      return selectedDate >= fromDate && selectedDate <= toDate;
+    });
+  };
+
+  // Check if date range conflicts with existing bookings
+  const hasDateConflict = (fromDate, toDate) => {
+    if (!fromDate || !toDate) return false;
+    
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    
+    return existingBookings.some(booking => {
+      const bookingFrom = new Date(booking.dates.from);
+      const bookingTo = new Date(booking.dates.to);
+      
+      // Check for overlap
+      return (from <= bookingTo && to >= bookingFrom);
+    });
+  };
 
   const requireAuth = () => {
     if (!token) {
@@ -93,6 +134,13 @@ export default function PgDetails() {
       dispatch(showToast({ type: 'error', message: 'Please select a valid date range' }));
       return;
     }
+    
+    // Check for date conflicts
+    if (hasDateConflict(bookingDates.from, bookingDates.to)) {
+      dispatch(showToast({ type: 'error', message: 'Selected dates are already booked by another user' }));
+      return;
+    }
+    
     const res = await dispatch(createBooking({ pgId: id, dates: bookingDates }));
     if (res.meta.requestStatus === 'fulfilled') {
       dispatch(showToast({ type: 'success', message: 'Booking requested successfully!' }));
@@ -316,6 +364,14 @@ export default function PgDetails() {
 
       <div className="mt-6">
         <h3 className="font-semibold">Book</h3>
+        {existingBookings.length > 0 && (
+          <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+            <p className="text-blue-800">
+              <strong>Note:</strong> Some dates may be unavailable due to existing bookings. 
+              Please select dates that don't conflict with already booked periods.
+            </p>
+          </div>
+        )}
         {hasPendingBooking ? (
           <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
             <p className="text-yellow-800 text-sm">
@@ -330,8 +386,22 @@ export default function PgDetails() {
           //   <button type="submit" className="px-3 py-1 border rounded hover:bg-gray-50">Request Booking</button>
           // </form>
           <form onSubmit={onBook} className="mt-4 flex flex-col sm:flex-row gap-2 sm:gap-3 items-center justify-start w-full max-w-md">
-             <input className="border rounded p-2 text-sm sm:text-base w-full sm:w-auto cursor-pointer"  type="date" value={bookingDates.from} onChange={(e) => setBookingDates({ ...bookingDates, from: e.target.value })} required />
-             <input className="border rounded p-2 text-sm sm:text-base w-full sm:w-auto cursor-pointer" type="date" value={bookingDates.to} onChange={(e) => setBookingDates({ ...bookingDates, to: e.target.value })}  required />
+             <input 
+               className="border rounded p-2 text-sm sm:text-base w-full sm:w-auto cursor-pointer"  
+               type="date" 
+               value={bookingDates.from} 
+               onChange={(e) => setBookingDates({ ...bookingDates, from: e.target.value })} 
+               min={getToday()}
+               required 
+             />
+             <input 
+               className="border rounded p-2 text-sm sm:text-base w-full sm:w-auto cursor-pointer" 
+               type="date" 
+               value={bookingDates.to} 
+               onChange={(e) => setBookingDates({ ...bookingDates, to: e.target.value })} 
+               min={bookingDates.from || getToday()}
+               required 
+             />
              <button 
                type="submit" 
                disabled={bookingStatus === 'loading'}

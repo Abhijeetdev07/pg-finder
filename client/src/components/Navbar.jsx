@@ -1,8 +1,9 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { logout, selectAuth } from '../features/auth/slice.js';
-import { AiOutlineHeart } from 'react-icons/ai';
+import { setFilters } from '../features/pgs/slice.js';
+import { AiOutlineHeart, AiOutlineSearch, AiOutlineClose } from 'react-icons/ai';
 import Sidebar from './Sidebar.jsx';
 
 export default function Navbar() {
@@ -12,8 +13,12 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchRef = useRef(null);
+  const resultsRef = useRef(null);
 
-  //const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
+  const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
 
   const onLogout = () => {
     dispatch(logout());
@@ -22,13 +27,68 @@ export default function Navbar() {
   
   const initial = user?.name ? user.name.trim().charAt(0).toUpperCase() : null;
 
+  // Handle search functionality
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      dispatch(setFilters({ search: query.trim() }));
+      setShowSearchResults(true);
+    } else {
+      dispatch(setFilters({ search: '' }));
+      setShowSearchResults(false);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    dispatch(setFilters({ search: '' }));
+    setShowSearchResults(false);
+  };
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target) && 
+          resultsRef.current && !resultsRef.current.contains(event.target)) {
+        setShowSearchResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <>
-      <nav className="fixed top-0 w-full z-50 backdrop-blur-md border">
-        <div className="w-full max-w-[1300px] mx-auto flex items-center gap-3 p-3">
+      <nav className="fixed top-0 w-full z-50 backdrop-blur-md border flex items-center justify-center">
+        <div className="w-full max-w-[1300px] flex items-center justify-between gap-3 p-3">
           <Link to="/" className="text-lg font-semibold">PG-Hub</Link>
           
-          <div className="ml-auto flex items-center gap-3">
+          {/* Search Bar - Hidden on auth pages */}
+          {!isAuthRoute && (
+            <div className="flex-1 max-w-md" ref={searchRef}>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search PGs by title, city, or college"
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="w-full px-4 py-2 pl-10 pr-10 border border-gray-500 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                />
+                <AiOutlineSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                {searchQuery && (
+                  <button
+                    onClick={clearSearch}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <AiOutlineClose size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className=" flex items-center">
             {isInitializing ? (
               // Loading skeleton
               <div className="flex items-center gap-3">
@@ -37,12 +97,12 @@ export default function Navbar() {
               </div>
             ) : !user ? (
               <>
-                <Link to="/login" className="hover:underline">Login</Link>
-                <Link to="/register" className="hover:underline">Register</Link>
+                <Link to="/login">Login</Link>
+                <Link to="/register" className="border px-2 py-1 rounded bg-black/90 text-white hover:bg-black/100 ml-5">Register</Link>
               </>
             ) : (
               <>
-                <Link to="/favorites" aria-label="Favorites" title="Favorites" className="relative inline-flex items-center text-gray-700 hover:text-gray-900 mx-2">
+                <Link to="/favorites" aria-label="Favorites" title="Favorites" className="relative inline-flex items-center text-gray-700 hover:text-gray-900 mr-8">
                   <AiOutlineHeart size={28} />
                   {favorites.length > 0 && (
                     <>

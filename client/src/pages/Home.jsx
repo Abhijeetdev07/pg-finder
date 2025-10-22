@@ -24,6 +24,13 @@ export default function Home() {
     dispatch(fetchPgs());
   }, []);
 
+  // Re-fetch when search filter changes
+  useEffect(() => {
+    if (filters.search !== undefined) {
+      dispatch(fetchPgs());
+    }
+  }, [filters.search, dispatch]);
+
   // Update skeleton count and store in localStorage when results change
   useEffect(() => {
     if (results.length > 0) {

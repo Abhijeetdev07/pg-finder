@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../features/authOwner/slice.js';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { AiOutlineEye, AiOutlineEyeInvisible, AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 export default function Register() {
   const dispatch = useDispatch();
@@ -42,138 +42,132 @@ export default function Register() {
   };
 
   return (
-    <main className="min-h-[calc(100vh-120px)] grid place-items-center p-4">
-      <div className="w-full max-w-md bg-white sm:border sm:rounded-xl sm:shadow-md sm:p-8 p-4">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Owner Registration</h1>
-          <p className="text-gray-600 mt-2">Create your owner account to manage PGs</p>
-        </div>
-        
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
-            </label>
+    <main className="min-h-screen grid place-items-center">
+      <div className="w-full max-w-[480px] bg-white border rounded-xl shadow-md p-6">
+        <h1 className="text-2xl font-bold mb-4 text-center">Owner Registration</h1>
+        <p className="text-gray-500 mb-5 text-center">Create account to manage PGs</p>
+        <form onSubmit={onSubmit} className="space-y-6">
+          <div className="relative">
             <input 
-              className="w-full h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+              id="name"
+              className="peer w-full h-12 px-3 pt-5 pb-1 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors" 
               type="text" 
               value={form.name} 
               onChange={(e) => setForm({...form, name: e.target.value})} 
               required 
-              placeholder="Enter your full name"
+              placeholder=""
             />
+            <label 
+              htmlFor="name"
+              className="absolute left-3 top-3 text-gray-500 transition-all duration-200 pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-xs peer-focus:text-indigo-600 peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs"
+            >
+              Full Name
+            </label>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
-            </label>
+          <div className="relative">
             <input 
-              className="w-full h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+              id="email"
+              className="peer w-full h-12 px-3 pt-5 pb-1 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors" 
               type="email" 
               value={form.email} 
               onChange={(e) => setForm({...form, email: e.target.value})} 
               required 
-              placeholder="Enter your email"
+              placeholder=""
             />
+            <label 
+              htmlFor="email"
+              className="absolute left-3 top-3 text-gray-500 transition-all duration-200 pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-xs peer-focus:text-indigo-600 peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs"
+            >
+              Email Address
+            </label>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone Number
-            </label>
+          <div className="relative">
             <input 
-              className="w-full h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+              id="phone"
+              className="peer w-full h-12 px-3 pt-5 pb-1 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors" 
               type="tel" 
               value={form.phone} 
               onChange={(e) => setForm({...form, phone: e.target.value})} 
-              placeholder="Enter your phone number"
+              placeholder=""
             />
+            <label 
+              htmlFor="phone"
+              className="absolute left-3 top-3 text-gray-500 transition-all duration-200 pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-xs peer-focus:text-indigo-600 peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs"
+            >
+              Phone Number (Optional)
+            </label>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="relative">
+            <input 
+              id="password"
+              className="peer w-full h-12 px-3 pt-5 pb-1 pr-10 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors" 
+              type={form._showPwd ? 'text' : 'password'} 
+              value={form.password} 
+              onChange={(e) => setForm({...form, password: e.target.value})} 
+              required 
+              minLength={6}
+              placeholder=""
+            />
+            <label 
+              htmlFor="password"
+              className="absolute left-3 top-3 text-gray-500 transition-all duration-200 pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-xs peer-focus:text-indigo-600 peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs"
+            >
               Password
             </label>
-            <div className="relative">
-              <input 
-                className="w-full h-10 pr-10 pl-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
-                type={form._showPwd ? 'text' : 'password'} 
-                value={form.password} 
-                onChange={(e) => setForm({...form, password: e.target.value})} 
-                required 
-                placeholder="********"
-                minLength={6}
-              />
-              <button
-                type="button"
-                aria-label={form._showPwd ? 'Hide password' : 'Show password'}
-                onClick={() => setForm((f) => ({ ...f, _showPwd: !f._showPwd }))}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-600 hover:text-gray-800"
-              >
-                {form._showPwd ? <AiOutlineEyeInvisible size={18} /> : <AiOutlineEye size={18} />}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setForm((f) => ({ ...f, _showPwd: !f._showPwd }))}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {form._showPwd ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+            </button>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="relative">
+            <input 
+              id="confirmPassword"
+              className={`peer w-full h-12 px-3 pt-5 pb-1 pr-10 border-2 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors ${form.confirmPassword && form.password !== form.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
+              type={form._showPwd2 ? 'text' : 'password'} 
+              value={form.confirmPassword} 
+              onChange={(e) => setForm({...form, confirmPassword: e.target.value})} 
+              required 
+              minLength={6}
+              placeholder=""
+            />
+            <label 
+              htmlFor="confirmPassword"
+              className="absolute left-3 top-3 text-gray-500 transition-all duration-200 pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-xs peer-focus:text-indigo-600 peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-xs"
+            >
               Confirm Password
             </label>
-            <div className="relative">
-              <input 
-                className={`w-full h-10 pr-10 pl-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                  form.confirmPassword && form.password !== form.confirmPassword 
-                    ? 'border-red-300' 
-                    : 'border-gray-300'
-                }`}
-                type={form._showPwd2 ? 'text' : 'password'} 
-                value={form.confirmPassword} 
-                onChange={(e) => setForm({...form, confirmPassword: e.target.value})} 
-                required 
-                placeholder="********"
-                minLength={6}
-              />
-              <button
-                type="button"
-                aria-label={form._showPwd2 ? 'Hide confirm password' : 'Show confirm password'}
-                onClick={() => setForm((f) => ({ ...f, _showPwd2: !f._showPwd2 }))}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-600 hover:text-gray-800"
-              >
-                {form._showPwd2 ? <AiOutlineEyeInvisible size={18} /> : <AiOutlineEye size={18} />}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setForm((f) => ({ ...f, _showPwd2: !f._showPwd2 }))}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {form._showPwd2 ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+            </button>
             {form.confirmPassword && form.password !== form.confirmPassword && (
-              <p className="text-red-600 text-sm mt-1">Passwords do not match</p>
+              <p className="text-red-600 text-xs mt-1">Passwords do not match</p>
             )}
           </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-3">
-              <p className="text-red-700 text-sm">{error}</p>
-            </div>
-          )}
-
-          <button 
-            type="submit" 
-            disabled={status === 'loading' || (form.confirmPassword && form.password !== form.confirmPassword)} 
-            className="w-full h-10 rounded-md bg-indigo-600 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors"
-          >
-            {status === 'loading' ? 'Creating Account...' : 'Create Owner Account'}
+          {error && <p role="alert" className="text-red-700 text-sm">{error}</p>}
+          <button type="submit" disabled={status==='loading' || (form.confirmPassword && form.password !== form.confirmPassword)} className="w-full h-10 rounded-lg bg-indigo-600 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
+            {status==='loading' ? (
+              <>
+                <AiOutlineLoading3Quarters className="animate-spin" size={20} />
+                Creating…
+              </>
+            ) : (
+              'Create account'
+            )}
           </button>
         </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
-            Already have an account?{' '}
-            <Link 
-              to="/login" 
-              className="text-indigo-600 hover:text-indigo-500 font-medium"
-            >
-              Sign in here
-            </Link>
-          </p>
-        </div>
+        <p className="mt-3 text-center text-sm">Already have an account? <Link to="/login" className="underline">Login</Link></p>
       </div>
     </main>
   );

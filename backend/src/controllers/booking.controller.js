@@ -52,4 +52,16 @@ export const ownerUpdateBooking = asyncHandler(async (req, res) => {
   res.status(200).json({ data: booking });
 });
 
+export const getPgBookings = asyncHandler(async (req, res) => {
+  const { pgId } = req.params;
+  
+  // Get all approved bookings for this PG
+  const bookings = await Booking.find({ 
+    pgId, 
+    status: 'approved' 
+  }).select('dates status');
+  
+  res.status(200).json({ data: bookings });
+});
+
 

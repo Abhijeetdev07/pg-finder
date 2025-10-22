@@ -52,6 +52,11 @@ export default function ReviewSection({ pgId }) {
       return;
     }
 
+    if (reviewForm.comment.length > 200) {
+      dispatch(showToast({ type: 'error', message: 'Comment must be 200 characters or less' }));
+      return;
+    }
+
     const res = await dispatch(createReview({ 
       pgId, 
       rating: Number(reviewForm.rating), 
@@ -145,15 +150,31 @@ export default function ReviewSection({ pgId }) {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Comment
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Comment
+                </label>
+                <span className={`text-xs ${
+                  reviewForm.comment.length > 200 
+                    ? 'text-red-600 font-semibold' 
+                    : reviewForm.comment.length > 180 
+                    ? 'text-orange-600' 
+                    : 'text-gray-500'
+                }`}>
+                  {reviewForm.comment.length}/200
+                </span>
+              </div>
               <textarea
-                className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:border-transparent ${
+                  reviewForm.comment.length > 200 
+                    ? 'border-red-500 focus:ring-red-500' 
+                    : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 placeholder="Share your experience with this PG..."
                 value={reviewForm.comment}
                 onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
                 rows={3}
+                maxLength={200}
                 required
               />
             </div>

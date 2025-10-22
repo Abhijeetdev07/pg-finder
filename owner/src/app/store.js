@@ -5,6 +5,7 @@ import inquiriesReducer from '../features/inquiries/slice.js';
 import bookingsReducer from '../features/bookings/slice.js';
 import analyticsReducer from '../features/analytics/slice.js';
 import profileReducer from '../features/profile/slice.js';
+import ratingsReducer from '../features/ratings/slice.js';
 import uiReducer from '../features/ui/slice.js';
 
 export const store = configureStore({
@@ -15,6 +16,7 @@ export const store = configureStore({
     bookings: bookingsReducer,
     analytics: analyticsReducer,
     profile: profileReducer,
+    ratings: ratingsReducer,
     ui: uiReducer,
   },
   devTools: import.meta.env.MODE !== 'production',

@@ -21,7 +21,10 @@ export default function Inquiries() {
       <div className="mx-auto max-w-7xl flex">
         <Sidebar />
         <main className="flex-1 p-4 max-[764px]:ml-0">
-          <h1 className="text-xl font-semibold mb-3">Inquiries</h1>
+          <div className="mb-6">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Inquiries</h1>
+            <p className="text-sm text-gray-600 mt-1">View and respond to tenant inquiries</p>
+          </div>
           {isLoading && <div className="p-3 text-sm">Loading…</div>}
           {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}
           {(!items || items.length===0) && status!=='loading' && (

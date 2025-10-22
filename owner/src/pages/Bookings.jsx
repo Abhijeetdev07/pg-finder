@@ -23,7 +23,10 @@ export default function Bookings() {
       <div className="mx-auto max-w-7xl flex">
         <Sidebar />
         <main className="flex-1 p-4">
-          <h1 className="text-xl font-semibold mb-3">Bookings</h1>
+          <div className="mb-6">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Bookings</h1>
+            <p className="text-sm text-gray-600 mt-1">Manage tenant bookings and approvals</p>
+          </div>
           {isLoading && <div className="p-3 text-sm">loading...</div>}
           {error && <div className="border rounded bg-white p-3 text-sm text-red-600">{error}</div>}
           {(!items || items.length===0) && status!=='loading' && (
@@ -61,14 +64,27 @@ export default function Bookings() {
                       </td>
                       <td className="px-3 py-2">
                         <div className="flex items-center justify-center gap-1 sm:gap-2">
-                          <button onClick={()=>dispatch(updateBookingStatus({ id: b._id, status: 'approved' }))} className="px-1 sm:px-2 py-1 rounded border border-green-200 bg-green-50 text-green-800 hover:bg-green-100 text-xs sm:text-sm flex items-center gap-1">
-                            <FaCheck className="max-[400px]:block hidden" size={12} />
-                            <span className="max-[400px]:hidden">Approve</span>
-                          </button>
-                          <button onClick={()=>dispatch(updateBookingStatus({ id: b._id, status: 'rejected' }))} className="px-1 sm:px-2 py-1 rounded border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 text-xs sm:text-sm flex items-center gap-1">
-                            <FaTimes className="max-[400px]:block hidden" size={12} />
-                            <span className="max-[400px]:hidden">Reject</span>
-                          </button>
+                          {b.status === 'requested' && (
+                            <>
+                              <button onClick={()=>dispatch(updateBookingStatus({ id: b._id, status: 'approved' }))} className="px-1 sm:px-2 py-1 rounded border border-green-200 bg-green-50 text-green-800 hover:bg-green-100 text-xs sm:text-sm flex items-center gap-1">
+                                <FaCheck className="max-[400px]:block hidden" size={12} />
+                                <span className="max-[400px]:hidden">Approve</span>
+                              </button>
+                              <button onClick={()=>dispatch(updateBookingStatus({ id: b._id, status: 'rejected' }))} className="px-1 sm:px-2 py-1 rounded border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 text-xs sm:text-sm flex items-center gap-1">
+                                <FaTimes className="max-[400px]:block hidden" size={12} />
+                                <span className="max-[400px]:hidden">Reject</span>
+                              </button>
+                            </>
+                          )}
+                          {b.status === 'approved' && (
+                            <span className="text-xs sm:text-sm text-gray-500">Approved</span>
+                          )}
+                          {b.status === 'rejected' && (
+                            <span className="text-xs sm:text-sm text-gray-500">Rejected</span>
+                          )}
+                          {b.status === 'cancelled' && (
+                            <span className="text-xs sm:text-sm text-gray-500">Cancelled</span>
+                          )}
                         </div>
                       </td>
                     </tr>

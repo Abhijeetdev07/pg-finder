@@ -26,9 +26,23 @@ const deleteCloudinaryImages = async (imageUrls) => {
 export const listPgs = asyncHandler(async (req, res) => {
   const {
     sort = "-createdAt",
+    search = "",
   } = req.query;
 
-  const items = await Pg.find({}).sort(sort);
+  // Build search query
+  let query = {};
+  if (search && search.trim()) {
+    const searchRegex = new RegExp(search.trim(), 'i');
+    query = {
+      $or: [
+        { title: searchRegex },
+        { city: searchRegex },
+        { college: searchRegex }
+      ]
+    };
+  }
+
+  const items = await Pg.find(query).sort(sort);
   res.status(200).json({ data: items, meta: { total: items.length } });
 });
 

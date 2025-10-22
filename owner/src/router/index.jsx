@@ -7,6 +7,7 @@ import PgForm from '../pages/PgForm.jsx';
 import Inquiries from '../pages/Inquiries.jsx';
 import Bookings from '../pages/Bookings.jsx';
 import Analytics from '../pages/Analytics.jsx';
+import Ratings from '../pages/Ratings.jsx';
 import Profile from '../pages/Profile.jsx';
 import NotFound from '../pages/NotFound.jsx';
 
@@ -22,6 +23,7 @@ export default function AppRouter() {
       <Route path="/listings/:id/edit" element={<ProtectedRoute><PgForm /></ProtectedRoute>} />
       <Route path="/inquiries" element={<ProtectedRoute><Inquiries /></ProtectedRoute>} />
       <Route path="/bookings" element={<ProtectedRoute><Bookings /></ProtectedRoute>} />
+      <Route path="/ratings" element={<ProtectedRoute><Ratings /></ProtectedRoute>} />
       <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
