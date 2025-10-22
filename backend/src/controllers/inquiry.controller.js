@@ -15,7 +15,9 @@ export const createInquiry = asyncHandler(async (req, res) => {
 });
 
 export const ownerListInquiries = asyncHandler(async (req, res) => {
-  const inquiries = await Inquiry.find().populate({ path: "pgId", match: { ownerId: req.user.id } });
+  const inquiries = await Inquiry.find()
+    .populate({ path: "pgId", match: { ownerId: req.user.id } })
+    .populate('userId', 'name email');
   res.status(200).json({ data: inquiries.filter((i) => i.pgId) });
 });
 

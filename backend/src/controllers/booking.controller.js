@@ -29,7 +29,9 @@ export const createBooking = asyncHandler(async (req, res) => {
 });
 
 export const ownerListBookings = asyncHandler(async (req, res) => {
-  const bookings = await Booking.find().populate({ path: "pgId", match: { ownerId: req.user.id } });
+  const bookings = await Booking.find()
+    .populate({ path: "pgId", match: { ownerId: req.user.id } })
+    .populate('userId', 'name email');
   res.status(200).json({ data: bookings.filter((b) => b.pgId) });
 });
 
