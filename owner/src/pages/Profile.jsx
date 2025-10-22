@@ -47,20 +47,51 @@ export default function Profile() {
     }
   };
   return (
-    <div className="h-screen bg-gray-50 pt-[52px]">
+    <div className="h-screen bg-gray-50 pt-[52px] overflow-y-hidden">
       <OwnerNavbar />
-      <div className="mx-auto max-w-7xl flex">
+      <div className="mx-auto max-w-7xl flex h-full">
         <Sidebar />
-        <main className="flex-1 p-6">
-          <div className="mb-6">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Profile</h1>
-            <p className="text-sm text-gray-600 mt-1">Manage your account information</p>
-          </div>
-          {isLoading && <div className="p-4 text-sm text-gray-600">Loading…</div>}
-          {error && <div className="border border-red-200 rounded-lg bg-red-50 p-4 text-sm text-red-600">{error}</div>}
-          {user && (
-            !editing ? (
-              <div className="bg-white border border-gray-200 rounded-xl shadow-md p-6 max-w-2xl">
+        <main className="flex-1 p-4 overflow-y-auto max-h-[calc(100vh-52px)] max-[764px]:ml-0">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="mb-6">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Profile</h1>
+              <p className="text-sm text-gray-600 mt-1">Manage your account information</p>
+            </div>
+
+            {/* Loading Skeleton */}
+            {isLoading && (
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 max-w-2xl">
+                <div className="space-y-5 animate-pulse">
+                  <div>
+                    <div className="h-4 w-24 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-11 bg-gray-200 rounded-lg"></div>
+                  </div>
+                  <div>
+                    <div className="h-4 w-28 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-11 bg-gray-200 rounded-lg"></div>
+                  </div>
+                  <div>
+                    <div className="h-4 w-28 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-11 bg-gray-200 rounded-lg"></div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 mt-8">
+                  <div className="h-10 w-32 bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+            )}
+
+            {/* Error State */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm max-w-2xl">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+            {/* Profile Content */}
+            {user && (
+              !editing ? (
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 max-w-2xl">
                 <div className="space-y-5">
                   <label className="block">
                     <span className="text-sm font-semibold text-gray-700 mb-2 block">Full Name</span>
@@ -91,9 +122,9 @@ export default function Profile() {
                     Edit Profile
                   </button>
                 </div>
-              </div>
-            ) : (
-              <form onSubmit={onSubmit} className="bg-white border border-gray-200 rounded-xl shadow-md p-6 max-w-2xl">
+                </div>
+              ) : (
+                <form onSubmit={onSubmit} className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 max-w-2xl">
                 <h2 className="text-xl font-bold text-gray-800 mb-6">Edit Profile</h2>
                 <div className="space-y-5">
                   <label className="block">
@@ -154,9 +185,10 @@ export default function Profile() {
                     Cancel
                   </button>
                 </div>
-              </form>
-            )
-          )}
+                </form>
+              )
+            )}
+          </div>
         </main>
       </div>
     </div>
