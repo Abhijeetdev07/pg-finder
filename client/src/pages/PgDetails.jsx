@@ -238,188 +238,275 @@ export default function PgDetails() {
   if (!pg) return <div className="p-4">Not found</div>;
 
   return (
-    <div className="min-h-screen p-2 max-w-[1200px] mx-auto pt-[70px]">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold truncate">{pg.title}</h1>
-        <button
-          onClick={onToggleFavorite}
-          className="h-8 w-8 bg-white rounded-full border shadow mr-5 flex items-center justify-center disabled:opacity-60"
-          aria-label="Toggle favorite"
-          title={favorites.some((f)=> f._id === id) ? 'Remove from favorites' : 'Add to favorites'}
-          disabled={isFavLoading}
-        >
-          {isFavLoading ? (
-            <HeartBorderSpinner size={16} color="#ef4444" strokeWidth={2} className="align-middle" />
-          ) : favorites.some((f)=> f._id === id) ? (
-            <AiFillHeart className="text-red-600" />
-          ) : (
-            <AiOutlineHeart />
-          )}
-        </button>
-      </div>
-
-      {Array.isArray(pg.photos) && pg.photos.length > 0 && (
-        pg.photos.length >= 5 ? (
-          <div className="mt-3 grid grid-cols-1 md:grid-cols-[50%_50%] gap-3 rounded overflow-hidden relative">
-            <div>
-              <img src={pg.photos[0]} alt={pg.title} className="w-full h-[420px] object-cover rounded" />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {pg.photos.slice(1,5).map((url, idx) => (
-                <img key={`${url}-${idx}`} src={url} alt={`${pg.title} ${idx+2}`} className="w-full h-[206px] object-cover rounded" />
-              ))}
-            </div>
-            <button onClick={()=>setShowAllPhotos(true)}
-              className="absolute bottom-3 right-3 inline-flex items-center gap-2 px-3 py-1 border rounded-full bg-black/90 hover:bg-black/100 text-sm shadow text-white cursor-pointer transition-all duration-300 ease-in-out">
-              <BiSolidGrid/> <span>Show all photos</span>
-            </button>
-          </div>
-        ) : (
-          <div className="flex gap-2 mt-3 flex-wrap">
-            {pg.photos.map((url) => (
-              <img key={url} src={url} alt={pg.title} className="w-52 h-40 object-cover rounded" />
-            ))}
-          </div>
-        )
-      )}
-
-      {showAllPhotos && (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" onClick={()=>setShowAllPhotos(false)}>
-          <div className="bg-white rounded shadow max-w-[1200px] w-full max-h-[90vh] overflow-auto p-4" onClick={(e)=>e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold">All photos</h3>
-              <button className="px-3 py-1 border rounded hover:bg-gray-50"onClick={()=>setShowAllPhotos(false)}>Close</button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {pg.photos.map((url, idx) => (
-                <img key={`${url}-${idx}`} src={url} alt={`${pg.title} ${idx+1}`} className="w-full h-64 object-cover rounded" />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="mt-3 space-y-1">
-        <p className="mt-5 mb-2 text-lg"><span className="font-semibold">Address:</span> {pg.address}, {pg.city} {pg.college ? `• ${pg.college}` : ''}</p>
-        <p className="font-medium">Rent: ₹{pg.rent} <span className="font-normal">/ Deposit: ₹{pg.deposit}</span></p>
-
-      <div className="mt-3 mb-5 border rounded-2xl p-3 bg-white flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 max-w-xl w-full">
-          <div className="flex-1 text-left">
-          <div className="font-semibold leading-tight text-base sm:text-lg"> Guest favourite</div>
-          <p className="text-sm text-gray-600">One of the most loved homes on PG-Hub, according to guests</p>
-      </div>
-      {/* Divider - hidden on small screens */}
-      <div className="hidden sm:block h-8 w-px bg-gray-200" />
-        <div className="text-left sm:text-right min-w-[120px]">
-          <div className="text-lg sm:text-xl font-bold"> {(pg.ratingAvg ?? 0).toFixed(1)}</div>
-           <div className="flex items-center sm:justify-end justify-start gap-1 flex-wrap">
-            {Array.from({ length: 5 }).map((_, i) => {
-               const filled = i < Math.round(pg.ratingAvg ?? 0);
-               return filled ? (
-                <AiFillStar key={i} className="text-yellow-400 text-sm" />
-              ) : (
-               <AiOutlineStar key={i} className="text-gray-300 text-sm" />
-             );
-             })}
-          <span className="text-xs text-gray-500 ml-1 whitespace-nowrap">{pg.ratingCount ?? 0} Reviews</span>
-         </div>
-        </div>
-      </div>
-
-        <div className="max-w-2xl">
-          <span className="mr-2 font-semibold">Facilities:</span>
-          <span className="inline-flex flex-wrap gap-2 align-middle mt-2">
-            {Array.isArray(pg.amenities) && pg.amenities.length > 0 ? (
-              pg.amenities.map((a, idx) => (
-                <span key={`${a}-${idx}`} className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
-                  {a}
-                </span>
-              ))
-            ) : null}
-          </span>
-        </div>
-        <p className="mt-5"><span className="font-semibold">Gender:</span> {pg.gender}</p>
-      </div>
-      <div className="mt-3 border rounded p-3 max-w-2xl">
-        <div className="font-semibold mb-1">Description:</div>
-        <p className="text-gray-700">{pg.description}</p>
-      </div>
-
-      <div className="mt-6">
-        <h3 className="font-semibold">Send Inquiry</h3>
-        <form onSubmit={onSendInquiry} className="mt-2 grid gap-2 max-w-xl">
-          <textarea className="border rounded p-2 max-w-[400px]" placeholder="Your message" value={inquiryMsg} onChange={(e)=>setInquiryMsg(e.target.value)} required />
-          <button 
-            type="submit" 
-            disabled={inquiryStatus === 'loading'}
-            className="px-3 py-1 border rounded hover:bg-black bg-black/90 w-max text-white transition-all ease-in-out duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+    <div className="min-h-screen bg-gray-50 pt-[70px] pb-8">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+        {/* Header Section */}
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{pg.title}</h1>
+          <button
+            onClick={onToggleFavorite}
+            className="h-10 w-10 bg-white rounded-full border-2 border-gray-200 shadow-sm hover:shadow-md flex items-center justify-center disabled:opacity-60 transition-all flex-shrink-0"
+            aria-label="Toggle favorite"
+            title={favorites.some((f)=> f._id === id) ? 'Remove from favorites' : 'Add to favorites'}
+            disabled={isFavLoading}
           >
-            {inquiryStatus === 'loading' && (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            {isFavLoading ? (
+              <HeartBorderSpinner size={20} color="#ef4444" strokeWidth={2} className="align-middle" />
+            ) : favorites.some((f)=> f._id === id) ? (
+              <AiFillHeart className="text-red-500" size={22} />
+            ) : (
+              <AiOutlineHeart size={22} className="text-gray-600" />
             )}
-            {inquiryStatus === 'loading' ? 'Sending...' : 'Send'}
           </button>
-        </form>
-      </div>
+        </div>
 
-      <div className="mt-6">
-        <h3 className="font-semibold">Book</h3>
-        {existingBookings.length > 0 && (
-          <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-sm">
-            <p className="text-blue-800">
-              <strong>Note:</strong> Some dates may be unavailable due to existing bookings. 
-              Please select dates that don't conflict with already booked periods.
-            </p>
+        {/* Photo Gallery - Original Structure */}
+        {Array.isArray(pg.photos) && pg.photos.length > 0 && (
+          pg.photos.length >= 5 ? (
+            <div className="mt-3 grid grid-cols-1 md:grid-cols-[50%_50%] gap-3 rounded overflow-hidden relative mb-6">
+              <div>
+                <img src={pg.photos[0]} alt={pg.title} className="w-full h-[420px] object-cover rounded" />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {pg.photos.slice(1,5).map((url, idx) => (
+                  <img key={`${url}-${idx}`} src={url} alt={`${pg.title} ${idx+2}`} className="w-full h-[206px] object-cover rounded" />
+                ))}
+              </div>
+              <button onClick={()=>setShowAllPhotos(true)}
+                className="absolute bottom-3 right-3 inline-flex items-center gap-2 px-3 py-1 border rounded-full bg-black/90 hover:bg-black/100 text-sm shadow text-white cursor-pointer transition-all duration-300 ease-in-out">
+                <BiSolidGrid/> <span>Show all photos</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2 mt-3 flex-wrap mb-6">
+              {pg.photos.map((url) => (
+                <img key={url} src={url} alt={pg.title} className="w-52 h-40 object-cover rounded" />
+              ))}
+            </div>
+          )
+        )}
+
+        {/* Photo Gallery Modal */}
+        {showAllPhotos && (
+          <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={()=>setShowAllPhotos(false)}>
+            <div className="bg-white rounded-xl shadow-2xl max-w-[1200px] w-full max-h-[90vh] overflow-auto" onClick={(e)=>e.stopPropagation()}>
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+                <h3 className="text-xl font-bold text-gray-900">All Photos ({pg.photos.length})</h3>
+                <button 
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                  onClick={()=>setShowAllPhotos(false)}
+                >
+                  Close
+                </button>
+              </div>
+              <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {pg.photos.map((url, idx) => (
+                  <img 
+                    key={`${url}-${idx}`} 
+                    src={url} 
+                    alt={`${pg.title} ${idx+1}`} 
+                    className="w-full h-64 object-cover rounded-lg" 
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         )}
-        {hasPendingBooking ? (
-          <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-            <p className="text-yellow-800 text-sm">
-              <strong>Booking Request Pending:</strong> You already have a pending booking request for this PG. 
-              Please wait for the owner to respond before making another request.
-            </p>
+
+        {/* Property Info Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Property Details */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Property Details</h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Address</p>
+                    <p className="text-gray-900">{pg.address}, {pg.city}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Gender Preference</p>
+                    <p className="text-gray-900 capitalize">{pg.gender}</p>
+                  </div>
+                </div>
+                {pg.roomsAvailable && (
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Rooms Available</p>
+                      <p className="text-gray-900">{pg.roomsAvailable} rooms</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Facilities */}
+            {Array.isArray(pg.amenities) && pg.amenities.length > 0 && (
+              <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Facilities & Amenities</h3>
+                <div className="flex flex-wrap gap-2">
+                  {pg.amenities.map((a, idx) => (
+                    <span 
+                      key={`${a}-${idx}`} 
+                      className="px-4 py-2 bg-gray-100 text-gray-800 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-200 transition-colors"
+                    >
+                      {a}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Phase 7: Description */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-3">About this place</h3>
+              <p className="text-gray-700 leading-relaxed">{pg.description}</p>
+            </div>
           </div>
-        ) : (
-          // <form onSubmit={onBook} className="mt-2 flex gap-2 items-center">
-          //   <input className="border rounded p-2" type="date" value={bookingDates.from} onChange={(e)=>setBookingDates({...bookingDates, from: e.target.value})} required />
-          //   <input className="border rounded p-2" type="date" value={bookingDates.to} onChange={(e)=>setBookingDates({...bookingDates, to: e.target.value})} required />
-          //   <button type="submit" className="px-3 py-1 border rounded hover:bg-gray-50">Request Booking</button>
-          // </form>
-          <form onSubmit={onBook} className="mt-4 flex flex-col sm:flex-row gap-2 sm:gap-3 items-center justify-start w-full max-w-md">
-             <input 
-               className="border rounded p-2 text-sm sm:text-base w-full sm:w-auto cursor-pointer"  
-               type="date" 
-               value={bookingDates.from} 
-               onChange={(e) => setBookingDates({ ...bookingDates, from: e.target.value })} 
-               min={getToday()}
-               required 
-             />
-             <input 
-               className="border rounded p-2 text-sm sm:text-base w-full sm:w-auto cursor-pointer" 
-               type="date" 
-               value={bookingDates.to} 
-               onChange={(e) => setBookingDates({ ...bookingDates, to: e.target.value })} 
-               min={bookingDates.from || getToday()}
-               required 
-             />
-             <button 
-               type="submit" 
-               disabled={bookingStatus === 'loading'}
-               className="px-4 py-2 border rounded bg-black/90 hover:bg-black text-sm sm:text-base text-white cursor-pointer whitespace-nowrap text-left transition-all ease-in-out duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-             >
-               {bookingStatus === 'loading' && (
-                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-               )}
-               {bookingStatus === 'loading' ? 'Requesting...' : 'Request Booking'}
-             </button>
-          </form>
 
+          {/* Sidebar - Pricing Card */}
+          <div className="lg:col-span-1">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg sticky top-24">
+              <div className="mb-6">
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-3xl font-bold text-gray-900">₹{pg.rent?.toLocaleString()}</span>
+                  <span className="text-gray-600">/month</span>
+                </div>
+                <p className="text-sm text-gray-600">Security Deposit: ₹{pg.deposit?.toLocaleString()}</p>
+              </div>
+              
+              <div className="border-t border-gray-200 pt-4">
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-gray-600">Rating</span>
+                  <div className="flex items-center gap-1">
+                    <AiFillStar className="text-yellow-400" size={16} />
+                    <span className="font-semibold">{(pg.ratingAvg ?? 0).toFixed(1)}</span>
+                    <span className="text-gray-500">({pg.ratingCount ?? 0})</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        {/* Inquiry and Booking Forms - Side by Side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Inquiry Form */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Send Inquiry</h3>
+            <form onSubmit={onSendInquiry} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Your Message</label>
+                <textarea 
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all min-h-[120px] resize-y" 
+                  placeholder="Ask about availability, facilities, or any other questions..."
+                  value={inquiryMsg} 
+                  onChange={(e)=>setInquiryMsg(e.target.value)} 
+                  required 
+                />
+              </div>
+              <button 
+                type="submit" 
+                disabled={inquiryStatus === 'loading'}
+                className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm flex items-center justify-center gap-2"
+              >
+                {inquiryStatus === 'loading' && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                )}
+                {inquiryStatus === 'loading' ? 'Sending...' : 'Send Inquiry'}
+              </button>
+            </form>
+          </div>
 
-        )}
+          {/* Booking Form */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Book this Property</h3>
+            
+            {existingBookings.length > 0 && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex gap-2">
+                  <svg className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-xs text-blue-800">
+                    <strong>Note:</strong> Some dates may be unavailable due to existing bookings.
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            {hasPendingBooking ? (
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex gap-2">
+                  <svg className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="font-semibold text-yellow-800 mb-1">Booking Request Pending</p>
+                    <p className="text-sm text-yellow-700">
+                      You already have a pending booking request for this PG. 
+                      Please wait for the owner to respond.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={onBook} className="space-y-4">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Check-in Date</label>
+                    <input 
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"  
+                      type="date" 
+                      value={bookingDates.from} 
+                      onChange={(e) => setBookingDates({ ...bookingDates, from: e.target.value })} 
+                      min={getToday()}
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Check-out Date</label>
+                    <input 
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
+                      type="date" 
+                      value={bookingDates.to} 
+                      onChange={(e) => setBookingDates({ ...bookingDates, to: e.target.value })} 
+                      min={bookingDates.from || getToday()}
+                      required 
+                    />
+                  </div>
+                </div>
+                <button 
+                  type="submit" 
+                  disabled={bookingStatus === 'loading'}
+                  className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm flex items-center justify-center gap-2"
+                >
+                  {bookingStatus === 'loading' && (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  )}
+                  {bookingStatus === 'loading' ? 'Requesting...' : 'Request Booking'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+
+        {/* Reviews Section */}
+        <ReviewSection pgId={id} />
       </div>
-
-      <ReviewSection pgId={id} />
     </div>
   );
 }
