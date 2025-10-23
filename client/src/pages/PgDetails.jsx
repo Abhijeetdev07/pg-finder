@@ -313,12 +313,85 @@ export default function PgDetails() {
           </div>
         )}
 
+        {/* Property Details and Pricing Card - Row layout for tablet (600px-1024px) */}
+        <div className="lg:hidden mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Pricing Card */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+              <div className="mb-6">
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-3xl font-bold text-gray-900">₹{pg.rent?.toLocaleString()}</span>
+                  <span className="text-gray-600">/month</span>
+                </div>
+                <p className="text-sm text-gray-600">Security Deposit: ₹{pg.deposit?.toLocaleString()}</p>
+              </div>
+              
+              <div className="border-t border-gray-200 pt-4">
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-gray-600">Rating</span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span key={star}>
+                          {star <= Math.round(pg.ratingAvg ?? 0) ? (
+                            <AiFillStar className="text-yellow-400" size={18} />
+                          ) : (
+                            <AiOutlineStar className="text-gray-300" size={18} />
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="font-semibold text-gray-700">{(pg.ratingAvg ?? 0).toFixed(1)}</span>
+                    <span className="text-gray-500">({pg.ratingCount ?? 0})</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Property Details */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Property Details</h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Address</p>
+                    <p className="text-gray-900">{pg.address}, {pg.city}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Gender Preference</p>
+                    <p className="text-gray-900 capitalize">{pg.gender}</p>
+                  </div>
+                </div>
+                {pg.roomsAvailable && (
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Rooms Available</p>
+                      <p className="text-gray-900">{pg.roomsAvailable} rooms</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Property Info Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Property Details */}
-            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            {/* Property Details - Desktop only (hidden on mobile/tablet since shown above) */}
+            <div className="hidden lg:block bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Property Details</h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -377,8 +450,8 @@ export default function PgDetails() {
             </div>
           </div>
 
-          {/* Sidebar - Pricing Card */}
-          <div className="lg:col-span-1">
+          {/* Sidebar - Pricing Card (Desktop only) */}
+          <div className="hidden lg:block lg:col-span-1">
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg sticky top-24">
               <div className="mb-6">
                 <div className="flex items-baseline gap-2 mb-1">
@@ -391,9 +464,19 @@ export default function PgDetails() {
               <div className="border-t border-gray-200 pt-4">
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span className="text-gray-600">Rating</span>
-                  <div className="flex items-center gap-1">
-                    <AiFillStar className="text-yellow-400" size={16} />
-                    <span className="font-semibold">{(pg.ratingAvg ?? 0).toFixed(1)}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span key={star}>
+                          {star <= Math.round(pg.ratingAvg ?? 0) ? (
+                            <AiFillStar className="text-yellow-400" size={18} />
+                          ) : (
+                            <AiOutlineStar className="text-gray-300" size={18} />
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="font-semibold text-gray-700">{(pg.ratingAvg ?? 0).toFixed(1)}</span>
                     <span className="text-gray-500">({pg.ratingCount ?? 0})</span>
                   </div>
                 </div>
@@ -403,7 +486,7 @@ export default function PgDetails() {
         </div>
 
         {/* Inquiry and Booking Forms - Side by Side */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
           {/* Inquiry Form */}
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Send Inquiry</h3>
