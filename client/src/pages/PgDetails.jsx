@@ -484,8 +484,8 @@ export default function PgDetails() {
             )}
           </div>
 
-          {/* Description - Full Width */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          {/* Description - Constrained Width */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm max-w-3xl">
             <h3 className="text-lg font-bold text-gray-900 mb-3">About this place</h3>
             <p className="text-gray-700 leading-relaxed">{pg.description}</p>
           </div>
