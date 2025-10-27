@@ -154,79 +154,149 @@ export default function PgDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen p-2 max-w-[1200px] mx-auto">
-        {/* Header skeleton */}
-        <div className="flex items-center justify-between gap-3 mb-3">
-          <div className="h-8 bg-gray-200 rounded animate-pulse w-64"></div>
-          <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
-        </div>
-        
-        {/* Photos skeleton */}
-        <div className="mt-3 grid grid-cols-1 md:grid-cols-[50%_50%] gap-3 rounded overflow-hidden">
-          <div className="h-[420px] bg-gray-200 rounded animate-pulse"></div>
-          <div className="grid grid-cols-2 gap-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-[206px] bg-gray-200 rounded animate-pulse"></div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Content skeleton */}
-        <div className="mt-6 space-y-4">
-          <div className="h-6 bg-gray-200 rounded animate-pulse w-80"></div>
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-64"></div>
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-48"></div>
-          
-          {/* Guest favourite skeleton */}
-          <div className="border rounded-2xl p-3 bg-white">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-              <div className="flex-1">
-                <div className="h-5 bg-gray-200 rounded animate-pulse w-32 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-64"></div>
-              </div>
-              <div className="h-8 w-px bg-gray-200 hidden sm:block"></div>
-              <div className="min-w-[120px]">
-                <div className="h-6 bg-gray-200 rounded animate-pulse w-16 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div>
-              </div>
-            </div>
+      <div className="min-h-screen bg-gray-50 pt-[70px] pb-8">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+          {/* Header skeleton */}
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="h-8 sm:h-9 bg-gray-200 rounded animate-pulse w-48 sm:w-64"></div>
+            <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse flex-shrink-0"></div>
           </div>
           
-          {/* Facilities skeleton */}
-          <div className="max-w-2xl">
-            <div className="h-4 bg-gray-200 rounded animate-pulse w-20 mb-2"></div>
-            <div className="flex gap-2 flex-wrap">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-6 bg-gray-200 rounded-full animate-pulse w-16"></div>
+          {/* Photos skeleton */}
+          <div className="mt-3 grid grid-cols-1 md:grid-cols-[50%_50%] gap-3 rounded overflow-hidden mb-6">
+            <div className="h-[420px] bg-gray-200 rounded animate-pulse"></div>
+            <div className="grid grid-cols-2 gap-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-[206px] bg-gray-200 rounded animate-pulse"></div>
               ))}
             </div>
           </div>
           
-          {/* Description skeleton */}
-          <div className="border rounded p-3 max-w-2xl">
-            <div className="h-4 bg-gray-200 rounded animate-pulse w-24 mb-2"></div>
-            <div className="space-y-2">
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
+          {/* Pricing and Booking Cards skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Pricing Card Skeleton */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+              <div className="mb-6">
+                <div className="flex items-baseline gap-2 mb-1">
+                  <div className="h-9 bg-gray-200 rounded animate-pulse w-32"></div>
+                  <div className="h-5 bg-gray-200 rounded animate-pulse w-16"></div>
+                </div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse w-48 mt-2"></div>
+              </div>
+              <div className="border-t border-gray-200 pt-4">
+                <div className="flex items-center justify-between">
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className="w-4 h-4 bg-gray-200 rounded-full animate-pulse"></div>
+                      ))}
+                    </div>
+                    <div className="h-4 bg-gray-200 rounded animate-pulse w-8"></div>
+                    <div className="h-4 bg-gray-200 rounded animate-pulse w-10"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Booking Card Skeleton */}
+            <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+              <div className="h-6 bg-gray-200 rounded animate-pulse w-48 mb-3"></div>
+              <div className="border border-gray-300 rounded-lg overflow-hidden mb-3">
+                <div className="grid grid-cols-2">
+                  <div className="border-r border-gray-300 p-2.5">
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-16 mb-1"></div>
+                    <div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div>
+                  </div>
+                  <div className="p-2.5">
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-16 mb-1"></div>
+                    <div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="h-10 bg-gray-200 rounded-full animate-pulse w-full"></div>
             </div>
           </div>
-          
-          {/* Forms skeleton */}
-          <div className="space-y-6">
-            <div>
-              <div className="h-5 bg-gray-200 rounded animate-pulse w-24 mb-2"></div>
-              <div className="h-20 bg-gray-200 rounded animate-pulse w-96 mb-2"></div>
-              <div className="h-8 bg-gray-200 rounded animate-pulse w-16"></div>
-            </div>
-            
-            <div>
-              <div className="h-5 bg-gray-200 rounded animate-pulse w-16 mb-2"></div>
-              <div className="flex gap-2">
-                <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
-                <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
-                <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
+
+          {/* Property Details and Facilities skeleton */}
+          <div className="mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {/* Property Details Skeleton */}
+              <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-40 mb-4"></div>
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="w-5 h-5 bg-gray-200 rounded animate-pulse flex-shrink-0 mt-0.5"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse w-20 mb-2"></div>
+                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
+
+              {/* Facilities Skeleton */}
+              <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-48 mb-4"></div>
+                <div className="flex flex-wrap gap-2">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="h-9 bg-gray-200 rounded-lg animate-pulse w-24"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Description Skeleton */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm max-w-3xl">
+              <div className="h-6 bg-gray-200 rounded animate-pulse w-36 mb-3"></div>
+              <div className="space-y-2">
+                <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Inquiry Form Skeleton */}
+          <div className="mb-8">
+            <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm max-w-2xl">
+              <div className="h-6 bg-gray-200 rounded animate-pulse w-32 mb-3 sm:mb-4"></div>
+              <div className="space-y-3 sm:space-y-4">
+                <div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-24 mb-1.5 sm:mb-2"></div>
+                  <div className="h-[100px] sm:h-[120px] bg-gray-200 rounded-lg animate-pulse w-full"></div>
+                  <div className="flex justify-end mt-1">
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-12"></div>
+                  </div>
+                </div>
+                <div className="h-10 sm:h-12 bg-gray-200 rounded-lg animate-pulse w-full"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Reviews Section Skeleton */}
+          <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm">
+            <div className="h-6 bg-gray-200 rounded animate-pulse w-40 mb-4"></div>
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="border-b border-gray-200 pb-4 last:border-0">
+                  <div className="flex items-start gap-3 mb-2">
+                    <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-200 rounded animate-pulse w-32 mb-2"></div>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: 5 }).map((_, j) => (
+                          <div key={j} className="w-4 h-4 bg-gray-200 rounded-full animate-pulse"></div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-full mb-1"></div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3"></div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
