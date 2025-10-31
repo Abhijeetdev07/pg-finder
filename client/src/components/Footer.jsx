@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* About Section */}
-          <div>
+          <div> 
             <h3 className="text-white font-bold text-lg mb-4">PG-Hub</h3>
             <p className="text-sm text-gray-400 leading-relaxed">
               Find your perfect PG accommodation. Connect with verified property owners and discover comfortable living spaces.
