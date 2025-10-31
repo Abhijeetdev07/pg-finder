@@ -70,7 +70,7 @@ export default function Navbar() {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search PGs by title, city, or college"
+                  placeholder="Search PG"
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   className="w-full px-4 py-2 pl-10 pr-10 border border-gray-500 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
