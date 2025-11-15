@@ -72,7 +72,7 @@ const slice = createSlice({
       });
   },
 });
-
+  
 export const { setFavorites, clearFavorites } = slice.actions;
 export default slice.reducer;
 
