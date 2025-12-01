@@ -5,6 +5,7 @@ import { logout, selectAuth } from '../features/auth/slice.js';
 import { setFilters } from '../features/pgs/slice.js';
 import { AiOutlineHeart, AiOutlineSearch, AiOutlineClose } from 'react-icons/ai';
 import Sidebar from './Sidebar.jsx';
+import navlogo from '../assets/navlogo.png';
 
 export default function Navbar() {
   const { user, isInitializing } = useSelector(selectAuth);
@@ -62,7 +63,7 @@ export default function Navbar() {
     <>
       <nav className="fixed top-0 w-full z-50 backdrop-blur-md border flex items-center justify-center">
         <div className="w-full max-w-[1300px] flex items-center justify-between gap-3 p-3">
-          <Link to="/" className="text-lg font-semibold">PG-Hub</Link>
+          <Link to="/" className="w-[110px] h-[40px] flex items-center justify-center"><img className='w-full h-full' src={navlogo} alt="navlogo" /></Link>
           
           {/* Search Bar - Hidden on auth pages */}
           {!isAuthRoute && (
