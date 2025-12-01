@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { AiOutlineHome, AiOutlineMail, AiOutlinePhone, AiOutlineGithub, AiOutlineTwitter, AiOutlineInstagram } from 'react-icons/ai';
+import navlogo from '../assets/navlogo.png';
 
 export default function Footer() {
   return (
@@ -8,7 +9,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* About Section */}
           <div> 
-            <h3 className="text-white font-bold text-lg mb-4">PG-Hub</h3>
+            {/* <h3 className="text-white font-bold text-lg mb-4">PG-Hub</h3> */}
+            <Link to="/" className="w-[110px] h-[40px] flex items-center justify-center mb-5"><img className='w-full h-full' src={navlogo} alt="navlogo" /></Link>
+
             <p className="text-sm text-gray-400 leading-relaxed">
               Find your perfect PG accommodation. Connect with verified property owners and discover comfortable living spaces.
             </p>
