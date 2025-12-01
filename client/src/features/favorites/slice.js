@@ -8,8 +8,8 @@ export const listFavorites = createAsyncThunk('favorites/list', async (_p, thunk
   } catch (err) {
     return thunkApi.rejectWithValue(err?.response?.data?.message || 'Failed to load favorites');
   }
-});
-
+});  
+   
 export const addFavorite = createAsyncThunk('favorites/add', async (pgId, thunkApi) => {
   try {
     await api.post(`/api/users/favorites/${pgId}`);
@@ -72,7 +72,7 @@ const slice = createSlice({
       });
   },
 });
-
+  
 export const { setFavorites, clearFavorites } = slice.actions;
 export default slice.reducer;
 
